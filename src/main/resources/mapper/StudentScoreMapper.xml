@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.StudentScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.StudentScore">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="studentId" column="student_id" jdbcType="BIGINT"/>
+            <result property="examinationPaperId" column="examination_paper_id" jdbcType="BIGINT"/>
+            <result property="userExaminationPaperId" column="user_examination_paper_id" jdbcType="BIGINT"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,student_id,examination_paper_id,
+        user_examination_paper_id,score
+    </sql>
+</mapper>

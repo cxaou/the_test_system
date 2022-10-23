@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.ExaminationPaperMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.ExaminationPaper">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="createName" column="create_name" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="updateName" column="update_name" jdbcType="BIGINT"/>
+            <result property="introduction" column="introduction" jdbcType="VARCHAR"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="duration" column="duration" jdbcType="TIME"/>
+            <result property="testScores" column="test_scores" jdbcType="DOUBLE"/>
+            <result property="isDelete" column="is_delete" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,type,create_time,
+        create_name,update_time,update_name,
+        introduction,title,duration,
+        test_scores,is_delete
+    </sql>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.TestQuestionsMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.TestQuestions">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="examinationPaperId" column="examination_paper_id" jdbcType="BIGINT"/>
+            <result property="testQuestionsType" column="test_questions_type" jdbcType="INTEGER"/>
+            <result property="data" column="data" jdbcType="VARCHAR"/>
+            <result property="options" column="options" jdbcType="VARCHAR"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="minSimilarity" column="min_similarity" jdbcType="INTEGER"/>
+            <result property="maxSimilarity" column="max_similarity" jdbcType="INTEGER"/>
+            <result property="isDelete" column="is_delete" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,examination_paper_id,test_questions_type,
+        data,options,answer,
+        score,min_similarity,max_similarity,
+        is_delete
+    </sql>
+</mapper>

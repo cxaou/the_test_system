@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.UserExaminationPaperMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.UserExaminationPaper">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="examintionPaperId" column="examintion_paper_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="examinationTime" column="examination_time" jdbcType="TIME"/>
+            <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+            <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+            <result property="start" column="s_start" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,examintion_paper_id,user_id,
+        examination_time,start_time,end_time,
+        s_start
+    </sql>
+</mapper>

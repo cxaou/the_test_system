@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.UserPowerMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.UserPower">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="addExamination" column="add_examination" jdbcType="INTEGER"/>
+            <result property="addAffiche" column="add_affiche" jdbcType="INTEGER"/>
+            <result property="delAffiche" column="del_affiche" jdbcType="INTEGER"/>
+            <result property="publishExamination" column="publish_examination" jdbcType="INTEGER"/>
+            <result property="gradePapers" column="grade_papers" jdbcType="INTEGER"/>
+            <result property="admin" column="admin" jdbcType="INTEGER"/>
+            <result property="teachers" column="teachers" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,add_examination,
+        add_affiche,del_affiche,publish_examination,
+        grade_papers,admin,teachers
+    </sql>
+</mapper>

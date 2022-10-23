@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxaou.thetestsystem.mapper.AfficheMapper">
+
+    <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.Affiche">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="createId" column="create_id" jdbcType="BIGINT"/>
+            <result property="updateId" column="update_id" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="data" column="data" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="is_delete" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_id,update_id,
+        create_time,update_time,type,
+        data,is_delete
+    </sql>
+</mapper>

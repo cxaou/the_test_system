@@ -35,6 +35,7 @@ public class UserController {
     @ApiParam("登录用的接口")
     public R<User> login(@RequestBody LogVo user) {
 
+
         if (user.getType() == null) {
             return R.error("登录方式为空");
         }
@@ -53,10 +54,8 @@ public class UserController {
         userOne.setPassword("");
         String token = TokenUtil.sign(userOne.getId());
         log.info("token: " + token);
-        R<User> r = new R<>();
-        R.success(userOne);
-        r.add("token", token);
-        return r;
+        userOne.setToken(token);
+        return R.success(userOne);
     }
 
     @GetMapping("index")

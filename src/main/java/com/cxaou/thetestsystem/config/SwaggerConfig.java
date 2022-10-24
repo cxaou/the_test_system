@@ -20,8 +20,6 @@ public class SwaggerConfig {
     @Value("${swagger.enable: false}")
     private Boolean enable;
 
-    @Value("${swagger.enable: false}")
-    private Boolean enable;
 
     @Bean
     public Docket createRestApi() {

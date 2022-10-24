@@ -9,3 +9,5 @@ server:
 spring:
   application:
     name: the_test_system
+swagger:
+  enable: true    

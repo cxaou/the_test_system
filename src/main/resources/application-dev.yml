@@ -10,4 +10,4 @@ spring:
   application:
     name: the_test_system
 swagger:
-  enable: true    
+  enable: true

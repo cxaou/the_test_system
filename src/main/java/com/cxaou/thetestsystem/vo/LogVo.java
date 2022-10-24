@@ -23,12 +23,12 @@ public class LogVo {
     /**
      * 密码
      */
-	@ApiModelProperty("密码") 
+	@ApiModelProperty(value = "密码",required = true)
     private String password;
 
     /**
      * 登录方式 0 手机号登录 1 用户名登录
      */
-	@ApiModelProperty("登录方式 0 手机号登录 1 用户名登录")  
+	@ApiModelProperty(value = "登录方式 0 手机号登录 1 用户名登录",required = true)
     private Integer type;  
 }

@@ -1,5 +1,6 @@
 package com.cxaou.thetestsystem.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -16,11 +17,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    @Value("${swagger.enable: false}")
+    private Boolean enable;
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .enable(true) //配置Swagger,如果是false，在浏览器无法访问
+                .enable(enable) //配置Swagger,如果是false，在浏览器无法访问
                 .select()
                 //为当前包路径,控制器类包
                 .apis(RequestHandlerSelectors.basePackage("com.cxaou.thetestsystem.controller"))

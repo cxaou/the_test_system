@@ -20,6 +20,7 @@ public class SwaggerConfig {
     @Value("${swagger.enable: false}")
     private Boolean enable;
 
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)

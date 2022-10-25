@@ -13,3 +13,5 @@ swagger:
   enable: true
 reggie:
   path: F:\temp
+SSM:
+  StartSSM: false

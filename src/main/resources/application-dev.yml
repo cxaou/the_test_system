@@ -11,3 +11,5 @@ spring:
     name: the_test_system
 swagger:
   enable: true
+reggie:
+  path: F:\temp

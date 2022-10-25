@@ -28,13 +28,13 @@ public class User implements Serializable {
     /**
      * 手机号
      */
-    @ApiModelProperty("手机号")
+    @ApiModelProperty(value = "手机号",example = "15879461996")
     private String phone;
 
     /**
      * 用户名
      */
-    @ApiModelProperty("用户名")
+    @ApiModelProperty(value = "用户名",example = "tom")
     private String username;
 
     /**
@@ -46,7 +46,7 @@ public class User implements Serializable {
     /**
      * 密码
      */
-    @ApiModelProperty("密码")
+    @ApiModelProperty(value = "密码",required = true,example = "000000")
     private String password;
 
     /**

@@ -1,21 +1,22 @@
 package com.cxaou.thetestsystem.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
+import java.io.Serializable;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * 
  * @TableName user
  */
-@ApiModel("学生信息表")
 @TableName(value ="user")
 @Data
+@ApiModel("用户信息")
 public class User implements Serializable {
     /**
      * 主键
@@ -39,7 +40,7 @@ public class User implements Serializable {
     /**
      * 0 admin 1 教师 2 学生
      */
-    @ApiModelProperty("0 admin 1 教师 2 学生")
+    @ApiModelProperty("身份  0 admin 1 教师 2 学生")
     private Integer identity;
 
     /**
@@ -51,7 +52,7 @@ public class User implements Serializable {
     /**
      * 状态  0 启用 1 禁用
      */
-    @ApiModelProperty("状态  0 启用 1 禁用")
+    @ApiModelProperty(" 状态  0 启用 1 禁用")
     private Integer state;
 
     /**
@@ -59,6 +60,11 @@ public class User implements Serializable {
      */
     @ApiModelProperty("头像")
     private String headPortrait;
+
+
+    @ApiModelProperty("token")
+    @TableField(exist = false)
+    private String token;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

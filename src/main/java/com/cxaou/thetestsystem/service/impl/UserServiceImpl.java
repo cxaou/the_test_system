@@ -22,7 +22,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         try {
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             //等于0 手机号登录
-            queryWrapper.eq(user.getType() == 0 && StringUtils.hasText(user.getPhone()), User::getPhone, user.getPhone())
+            queryWrapper.eq(user.getType() == 0, User::getPhone, user.getPhone())
                     .eq(user.getType() == 1 && StringUtils.hasText(user.getUsername()), User::getUsername, user.getUsername());
             User userOne = this.getOne(queryWrapper);
             return userOne;

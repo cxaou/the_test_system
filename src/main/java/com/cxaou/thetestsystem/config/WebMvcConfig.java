@@ -13,6 +13,9 @@ import java.util.List;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+
+
+
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // 创建消息转换器对象

@@ -44,7 +44,7 @@ public class TestQuestions implements Serializable {
     /**
      * 选项
      */
-    @ApiModelProperty(value = "选项 只有选择题有",example = "{\"A\":\" project\",\"B\": \"SVN\",\"C\" :\" notepad++\",\"D\":\"Xshell\"}" )
+    @ApiModelProperty(value = "选项 只有选择题有",example = "{\"A\":\" project\",\" B\": \"SVN\",\" C\" :\" notepad++\",\" D\":\"Xshell\"}" )
     private String options;
 
     /**

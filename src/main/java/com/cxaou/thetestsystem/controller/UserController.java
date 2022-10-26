@@ -96,7 +96,7 @@ public class UserController {
      * @return
      */
     @ApiParam(hidden = true)
-    @GetMapping("index")
+    @GetMapping("/index")
     public R<String> index(HttpServletRequest request) {
         return R.error(request.getAttribute("msg").toString());
     }
@@ -143,11 +143,22 @@ public class UserController {
         if (r_start != null) {
             return r_start;
         }
+
+        Integer identity = user.getIdentity();
+        if (identity == null) {
+            return R.error("身份验证信息为空");
+        }
+        if (identity < 0 || identity > 2) {
+            return R.error("身份不合法");
+        }
+
         //校验密码格式
         String signInPassword = user.getPassword();
         if (!VerifyUtils.verifyPassword(signInPassword)) {
             return R.error("密码不合法");
         }
+
+
         // 默认手机号做用户名
         user.setUsername(phone);
         // 默认0 启用

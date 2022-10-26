@@ -120,6 +120,7 @@ public class UserController {
         log.info(code);
 
         if (StartSSM){
+            //发送验证码
             MsmConstantUtils.sendPhone(code, phone);
         }
         // 设置验证码时效为一分钟

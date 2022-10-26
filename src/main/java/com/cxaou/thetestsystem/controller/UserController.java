@@ -34,8 +34,7 @@ public class UserController {
     private RedisTemplate redisTemplate;
 
     @Value("${SSM.StartSSM: false}")
-    private  Boolean StartSSM;
-
+    private Boolean StartSSM;
 
 
     @PostMapping("/login")
@@ -50,15 +49,16 @@ public class UserController {
             return R.error("登录方式为空");
         }
 
-        if (!StringUtils.hasText(code)){
-            return R.error("验证码为空");
-        }
+
         String phone = null;
         if (type == 0) {
+            if (!StringUtils.hasText(code)) {
+                return R.error("验证码为空");
+            }
             phone = user.getPhone();
             String codeRedis = (String) redisTemplate.opsForValue().get(phone);
             R<User> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
-            if (r_start!=null){
+            if (r_start != null) {
                 return r_start;
             }
 
@@ -80,10 +80,10 @@ public class UserController {
         userOne.setPassword("");
         String token = TokenUtil.sign(userOne.getId());
         log.info("token: " + token);
-        redisTemplate.opsForValue().set(token, userOne.getId(),3,TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(token, userOne.getId(), 3, TimeUnit.DAYS);
         userOne.setToken(token);
         // 用户登录成功,删除redis 的验证码
-        if (phone != null){
+        if (phone != null) {
             redisTemplate.delete(phone);
         }
 
@@ -119,7 +119,7 @@ public class UserController {
         String code = MsmConstantUtils.generateValidateCode(6);
         log.info(code);
 
-        if (StartSSM){
+        if (StartSSM) {
             MsmConstantUtils.sendPhone(code, phone);
         }
         // 设置验证码时效为一分钟
@@ -129,10 +129,10 @@ public class UserController {
 
     @ApiOperation("注册")
     @PostMapping("/signIn")
-    public R<String> signIn(@RequestBody LogVo user){
+    public R<String> signIn(@RequestBody LogVo user) {
         String code = user.getCode();
 
-        if (!StringUtils.hasText(code)){
+        if (!StringUtils.hasText(code)) {
             return R.error("验证码为空");
         }
 
@@ -140,7 +140,7 @@ public class UserController {
         String codeRedis = (String) redisTemplate.opsForValue().get(phone);
         //校验验证码和手机号
         R<String> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
-        if (r_start!=null){
+        if (r_start != null) {
             return r_start;
         }
         //校验密码格式
@@ -155,7 +155,9 @@ public class UserController {
         // 设置默认头像
         user.setHeadPortrait("aa.png");
         //保存用户
-        userService.save(user);
+        user.setPassword(MD5Util.getMD5Str(user.getPassword()));
+        userService.signIn(user);
+        // 保存用户的同时，创建一条用户详情的记录
         //注册成功 删除验证码
         redisTemplate.delete(phone);
         return R.success("成功");

@@ -10,4 +10,6 @@ import com.cxaou.thetestsystem.vo.LogVo;
 public interface UserService extends IService<User> {
 
     User login(LogVo user);
+
+    void signIn(LogVo user);
 }

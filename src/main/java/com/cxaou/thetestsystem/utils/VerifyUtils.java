@@ -54,4 +54,18 @@ public class VerifyUtils {
         }
         return null;
     }
+
+    /**
+     * 验证邮箱是否和法师
+     * @param email 邮箱
+     * @return 合法返回false
+     */
+    public static boolean isEmail(String email) {
+        if (email == null || email.length() < 1 || email.length() > 256) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$");
+        return pattern.matcher(email).matches();
+    }
+
 }

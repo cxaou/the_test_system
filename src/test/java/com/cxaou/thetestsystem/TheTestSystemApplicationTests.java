@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.cxaou.thetestsystem.pojo.TestQuestions;
 import com.cxaou.thetestsystem.utils.TokenUtil;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
 
@@ -17,11 +17,11 @@ class TheTestSystemApplicationTests {
     void contextLoads() {
     }
 
-	@Autowired
+    @Autowired
     private TokenUtil tokenUtil;
-    
-   @Test
-    void testToken(){
+
+    @Test
+    void testToken() {
         String sign = tokenUtil.sign(10002L);
         System.out.println("sign = " + sign);
         boolean verify = tokenUtil.verify(sign);
@@ -29,7 +29,7 @@ class TheTestSystemApplicationTests {
     }
 
     @Test
-    void mapToJson(){
+    void mapToJson() {
         TestQuestions testQuestions = new TestQuestions();
         testQuestions.setId(1L);
         testQuestions.setExaminationPaperId(1L);
@@ -38,7 +38,10 @@ class TheTestSystemApplicationTests {
         testQuestions.setOptions("{'A':'project','B': 'SVN','C' :'notepad+','D':'Xshell'}");
         testQuestions.setScore(10.0);
 
-        Map<String,Object> parse = (Map<String,Object>) JSONObject.parse(testQuestions.getOptions());
+        Map<String, Object> parse = (Map<String, Object>) JSONObject.parse(testQuestions.getOptions());
         System.out.println("parse = " + parse);
     }
+
+
+
 }

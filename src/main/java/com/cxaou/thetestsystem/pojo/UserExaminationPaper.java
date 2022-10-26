@@ -49,7 +49,7 @@ public class UserExaminationPaper implements Serializable {
     /**
      * 是否开始考试 0 开始 1 结束
      */
-    private Integer start;
+    private Integer examinationStart;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

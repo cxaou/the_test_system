@@ -10,7 +10,7 @@
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="identity" column="identity" jdbcType="INTEGER"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
-            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="userState" column="user_state" jdbcType="INTEGER"/>
             <result property="headPortrait" column="head_portrait" jdbcType="VARCHAR"/>
     </resultMap>
 

@@ -10,4 +10,8 @@ spring:
   application:
     name: the_test_system
 swagger:
-  enable: true
+  enable: true # 是否开启swagger
+reggie:
+  path: F:\temp
+SSM: # 配置是否开启短信验证，默认false ，不开启会在控制台输出
+  StartSSM: false

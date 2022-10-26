@@ -8,7 +8,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -17,6 +19,8 @@ import lombok.Data;
 @TableName(value ="user")
 @Data
 @ApiModel("用户信息")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable {
     /**
      * 主键
@@ -28,13 +32,13 @@ public class User implements Serializable {
     /**
      * 手机号
      */
-    @ApiModelProperty("手机号")
+    @ApiModelProperty(value = "手机号",example = "15879461996")
     private String phone;
 
     /**
      * 用户名
      */
-    @ApiModelProperty("用户名")
+    @ApiModelProperty(value = "用户名",example = "tom")
     private String username;
 
     /**
@@ -46,14 +50,14 @@ public class User implements Serializable {
     /**
      * 密码
      */
-    @ApiModelProperty("密码")
+    @ApiModelProperty(value = "密码",required = true,example = "000000")
     private String password;
 
     /**
      * 状态  0 启用 1 禁用
      */
     @ApiModelProperty(" 状态  0 启用 1 禁用")
-    private Integer state;
+    private Integer userState;
 
     /**
      * 头像

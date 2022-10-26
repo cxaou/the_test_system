@@ -11,7 +11,7 @@
             <result property="examinationTime" column="examination_time" jdbcType="TIME"/>
             <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
             <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
-            <result property="start" column="start" jdbcType="INTEGER"/>
+            <result property="examinationStart" column="examination_start" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">

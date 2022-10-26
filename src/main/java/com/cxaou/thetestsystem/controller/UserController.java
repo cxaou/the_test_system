@@ -5,11 +5,11 @@ import com.cxaou.thetestsystem.pojo.User;
 import com.cxaou.thetestsystem.service.UserService;
 import com.cxaou.thetestsystem.utils.MD5Util;
 import com.cxaou.thetestsystem.utils.MsmConstantUtils;
-import com.cxaou.thetestsystem.utils.PhoneUtils;
+import com.cxaou.thetestsystem.utils.VerifyUtils;
 import com.cxaou.thetestsystem.utils.TokenUtil;
 import com.cxaou.thetestsystem.vo.LogVo;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -37,14 +36,10 @@ public class UserController {
     @Value("${SSM.StartSSM: false}")
     private  Boolean StartSSM;
 
-    @ApiParam("/hello")
-    @GetMapping()
-    public R<String> hello() {
-        return R.success("成功");
-    }
+
 
     @PostMapping("/login")
-    @ApiParam("登录用的接口")
+    @ApiOperation("登录用的接口")
     public R<User> login(@RequestBody LogVo user) {
 
         String code = user.getCode();
@@ -54,19 +49,19 @@ public class UserController {
         if (type == null) {
             return R.error("登录方式为空");
         }
+
+        if (!StringUtils.hasText(code)){
+            return R.error("验证码为空");
+        }
         String phone = null;
         if (type == 0) {
             phone = user.getPhone();
-            if (!PhoneUtils.verifyPhone(phone)){
-                return R.error("手机号不合法");
-            }
             String codeRedis = (String) redisTemplate.opsForValue().get(phone);
-            if (codeRedis == null){
-                return R.error("请先获取验证码");
+            R<User> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
+            if (r_start!=null){
+                return r_start;
             }
-            if (!codeRedis.equals(code)){
-                return R.error("验证码错误");
-            }
+
 
         }
 
@@ -95,20 +90,25 @@ public class UserController {
         return R.success(userOne);
     }
 
+    /***
+     * 身份验证失败的接口
+     * @param request
+     * @return
+     */
     @ApiParam(hidden = true)
     @GetMapping("index")
-    public R<String> index(HttpServletRequest request, HttpServletResponse response) {
+    public R<String> index(HttpServletRequest request) {
         return R.error(request.getAttribute("msg").toString());
     }
 
-    @ApiParam("发送手机验证码")
+    @ApiOperation("发送手机验证码")
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody LogVo logUser) {
         // 获取手机号
         String phone = logUser.getPhone();
 
         // 手机号校验
-        if (!PhoneUtils.verifyPhone(phone)) {
+        if (!VerifyUtils.verifyPhone(phone)) {
             return R.error("手机号不合法");
         }
 
@@ -120,7 +120,6 @@ public class UserController {
         log.info(code);
 
         if (StartSSM){
-            //发送验证码
             MsmConstantUtils.sendPhone(code, phone);
         }
         // 设置验证码时效为一分钟
@@ -128,4 +127,37 @@ public class UserController {
         return R.success("手机验证码发送成功");
     }
 
+    @ApiOperation("注册")
+    @PostMapping("/signIn")
+    public R<String> signIn(@RequestBody LogVo user){
+        String code = user.getCode();
+
+        if (!StringUtils.hasText(code)){
+            return R.error("验证码为空");
+        }
+
+        String phone = user.getPhone();
+        String codeRedis = (String) redisTemplate.opsForValue().get(phone);
+        //校验验证码和手机号
+        R<String> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
+        if (r_start!=null){
+            return r_start;
+        }
+        //校验密码格式
+        String signInPassword = user.getPassword();
+        if (!VerifyUtils.verifyPassword(signInPassword)) {
+            return R.error("密码不合法");
+        }
+        // 默认手机号做用户名
+        user.setUsername(phone);
+        // 默认0 启用
+        user.setUserState(0);
+        // 设置默认头像
+        user.setHeadPortrait("aa.png");
+        //保存用户
+        userService.save(user);
+        //注册成功 删除验证码
+        redisTemplate.delete(phone);
+        return R.success("成功");
+    }
 }

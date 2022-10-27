@@ -61,6 +61,11 @@ public class UserInfo implements Serializable {
      */
     private String school;
 
+    /**
+     * 生日
+     */
+    private LocalDate birthday;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

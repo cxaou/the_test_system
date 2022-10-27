@@ -14,6 +14,7 @@
             <result property="idNumber" column="id_number" jdbcType="VARCHAR"/>
             <result property="email" column="email" jdbcType="VARCHAR"/>
             <result property="school" column="school" jdbcType="VARCHAR"/>
+            <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">

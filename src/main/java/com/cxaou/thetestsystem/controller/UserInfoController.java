@@ -1,6 +1,7 @@
 package com.cxaou.thetestsystem.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cxaou.thetestsystem.common.R;
 import com.cxaou.thetestsystem.pojo.UserInfo;
 import com.cxaou.thetestsystem.service.UserInfoService;
@@ -11,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -55,5 +53,17 @@ public class UserInfoController {
         log.info("token:  {}   userId: {} ",token,userId);
 
         return R.success("更新成功");
+    }
+
+    @ApiOperation("查看用户详细信息")
+    @GetMapping("/userInfo")
+    public R<UserInfo> getUserInfo(HttpServletRequest request){
+        String token = request.getHeader("token");
+        Long userId = (Long) redisTemplate.opsForValue().get(token);
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserInfo::getUserId,userId);
+        UserInfo userInfo = userInfoService.getOne(queryWrapper);
+        userInfo.setIdNumber("");
+        return R.success(userInfo);
     }
 }

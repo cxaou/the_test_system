@@ -21,7 +21,7 @@ public class Student implements Serializable {
     /**
      * 主键
      */
-    @ApiModelProperty(value = "id",required = true,example = "1002")
+    @ApiModelProperty(value = "id",example = "1002")
     @TableId
     private Long id;
 

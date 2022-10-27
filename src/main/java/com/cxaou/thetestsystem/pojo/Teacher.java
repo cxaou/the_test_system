@@ -20,7 +20,7 @@ public class Teacher implements Serializable {
     /**
      * 主键
      */
-    @ApiModelProperty(value = "id",example = "1008",required = true)
+    @ApiModelProperty(value = "id",example = "1008")
     @TableId
     private Long id;
 

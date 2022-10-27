@@ -56,6 +56,11 @@ public class UserController {
                 return R.error("验证码为空");
             }
             phone = user.getPhone();
+
+            if (!VerifyUtils.verifyPhone(phone)) {
+                return R.error("手机号不合法");
+            }
+
             String codeRedis = (String) redisTemplate.opsForValue().get(phone);
             R<User> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
             if (r_start != null) {
@@ -72,6 +77,10 @@ public class UserController {
         User userOne = userService.login(user);
         if (userOne == null) {
             return R.error("账号不存在");
+        }
+        // 判断账号状态
+        if (userOne.getUserState() == 1){
+            return R.error("该账号已经被禁用了");
         }
         String password = MD5Util.getMD5Str(user.getPassword());
         if (!password.equals(userOne.getPassword())) {
@@ -146,7 +155,7 @@ public class UserController {
 
         Integer identity = user.getIdentity();
         if (identity == null) {
-            return R.error("身份验证信息为空");
+            return R.error("身份信息为空");
         }
         if (identity < 0 || identity > 2) {
             return R.error("身份不合法");

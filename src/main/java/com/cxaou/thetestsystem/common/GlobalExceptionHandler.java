@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public R<String> exceptionHandler(SQLIntegrityConstraintViolationException ex){
 
         String message = ex.getMessage();
-        log.error(message);
+        log.error("错误信息：{}",message);
         if (message.contains("Duplicate entry")){
             String[] s = message.split(" ");
             String msg = s[2]+ "已存在";

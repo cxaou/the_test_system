@@ -30,9 +30,10 @@ public class UserInfoController {
     private UserInfoService userInfoService;
 
     // 修改
-    @PutMapping("/update")
+    @PutMapping()
     @ApiOperation("更新用户信息")
-    public R<String> update(@RequestBody UserInfo userInfo, HttpServletRequest request){
+    public R<String> update(@RequestBody UserInfo userInfo, HttpServletRequest request) {
+        log.info("生日：{}", userInfo.getBirthday().getClass());
         //拿到token
         String token = request.getHeader("token");
         // 根据token拿到id
@@ -40,28 +41,29 @@ public class UserInfoController {
         // 只能修改自己的用户信息
         userInfo.setUserId(userId);
         userInfo.setUpdateTime(LocalDate.now());
+
         // 校验身份证的和合法性
-        if (!IDCardUtil.isIDCard(userInfo.getIdNumber())){
+        if (userInfo.getIdNumber() != null && !IDCardUtil.isIDCard(userInfo.getIdNumber())) {
             return R.error("身份证不合法");
         }
-        if (!VerifyUtils.isEmail(userInfo.getEmail())){
+        if (userInfo.getEmail() != null && !VerifyUtils.isEmail(userInfo.getEmail())) {
             return R.error("邮箱不合法");
         }
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserInfo::getUserId,userInfo.getUserId());
-        userInfoService.update(userInfo,queryWrapper);
-        log.info("token:  {}   userId: {} ",token,userId);
+        queryWrapper.eq(UserInfo::getUserId, userInfo.getUserId());
+        userInfoService.update(userInfo, queryWrapper);
+        log.info("token:  {}   userId: {} ", token, userId);
 
         return R.success("更新成功");
     }
 
     @ApiOperation("查看用户详细信息")
     @GetMapping("/userInfo")
-    public R<UserInfo> getUserInfo(HttpServletRequest request){
+    public R<UserInfo> getUserInfo(HttpServletRequest request) {
         String token = request.getHeader("token");
         Long userId = (Long) redisTemplate.opsForValue().get(token);
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserInfo::getUserId,userId);
+        queryWrapper.eq(UserInfo::getUserId, userId);
         UserInfo userInfo = userInfoService.getOne(queryWrapper);
         userInfo.setIdNumber("");
         return R.success(userInfo);

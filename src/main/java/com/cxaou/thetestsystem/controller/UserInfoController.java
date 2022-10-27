@@ -58,7 +58,7 @@ public class UserInfoController {
     }
 
     @ApiOperation("查看用户详细信息")
-    @GetMapping("/userInfo")
+    @GetMapping()
     public R<UserInfo> getUserInfo(HttpServletRequest request) {
         String token = request.getHeader("token");
         Long userId = (Long) redisTemplate.opsForValue().get(token);

@@ -12,4 +12,7 @@ public interface UserService extends IService<User> {
     User login(LogVo user);
 
     void signIn(LogVo user);
+
+    User authenticationByName(String name,int identity);
+
 }

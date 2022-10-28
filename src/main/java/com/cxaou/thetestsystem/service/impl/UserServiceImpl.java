@@ -74,6 +74,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         userInfoService.save(userInfo);
     }
+
+
+    /**
+     * 根据name校验身份
+     * @param name 用户名
+     * @param identity 身份
+     * @return 合法就返回用户信息，否则返回null
+     */
+    @Override
+    public User authenticationByName(String name,int identity) {
+        if (name == null){
+            return null;
+        }
+        // 查看学生在数据库不
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 先根据name查询用户表，获取用户表的id
+        lambdaQueryWrapper.eq(User::getUsername,name);
+        User user = this.getOne(lambdaQueryWrapper);
+        if (!isNullUser(user,identity)){
+            return null;
+        }
+        return user;
+    }
+
+    /**
+     * 检验用户身份是否合法
+     * @param user 用户
+     * @param identity 身份
+     * @return 合法true ， 不合法 false
+     */
+    public boolean isNullUser(User user,int identity){
+        if (user == null || user.getIdentity() != identity || user.getUserState() != 0 ){
+            return false;
+        }
+        return true;
+    }
+
 }
 
 

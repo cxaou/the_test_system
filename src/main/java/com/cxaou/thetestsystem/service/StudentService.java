@@ -21,4 +21,6 @@ public interface StudentService extends IService<Student> {
     void getStudentByCurrentUser(Long currentId,Page<User> pageInfo ,String name);
 
     R<String> addStudent(Long currentUserId, StudentAndTeacherVo studentAndTeacherVo);
+
+
 }

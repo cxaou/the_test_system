@@ -12,10 +12,10 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,thacher_id,studet_id
+        id,thacher_id,student_id
     </sql>
     <select id="searchStudentIdByThacherId" resultType="java.lang.Long">
-        SELECT studet_id from teacher_student WHERE thacher_id = #{ThacherId}
+        SELECT student_id from teacher_student WHERE is_delete=0 and  thacher_id = #{ThacherId}
     </select>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.cxaou.thetestsystem.controller;
 
 import com.cxaou.thetestsystem.common.R;
+import com.cxaou.thetestsystem.dto.UserDto;
 import com.cxaou.thetestsystem.pojo.User;
 import com.cxaou.thetestsystem.service.UserService;
 import com.cxaou.thetestsystem.utils.MD5Util;
@@ -12,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -86,17 +88,22 @@ public class UserController {
         if (!password.equals(userOne.getPassword())) {
             return R.error("账号或密码错误");
         }
+        //把查询出来的密码置空
         userOne.setPassword("");
         String token = TokenUtil.sign(userOne.getId());
         log.info("token: " + token);
+        // 设置过期时间为3天
         redisTemplate.opsForValue().set(token, userOne.getId(), 3, TimeUnit.DAYS);
-        userOne.setToken(token);
+        UserDto userDto = new UserDto();
+        // 拷贝对象
+        BeanUtils.copyProperties(userOne,userDto);
+        userDto.setToken(token);
         // 用户登录成功,删除redis 的验证码
         if (phone != null) {
             redisTemplate.delete(phone);
         }
 
-        return R.success(userOne);
+        return R.success(userDto);
     }
 
     /***
@@ -157,7 +164,7 @@ public class UserController {
         if (identity == null) {
             return R.error("身份信息为空");
         }
-        if (identity < 0 || identity > 2) {
+        if (!(identity == 1 || identity == 2)) {
             return R.error("身份不合法");
         }
 
@@ -176,8 +183,9 @@ public class UserController {
         user.setHeadPortrait("aa.png");
         //保存用户
         user.setPassword(MD5Util.getMD5Str(user.getPassword()));
-        userService.signIn(user);
         // 保存用户的同时，创建一条用户详情的记录
+        userService.signIn(user);
+
         //注册成功 删除验证码
         redisTemplate.delete(phone);
         return R.success("成功");

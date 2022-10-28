@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class StudentAndTeacherVo {
 
-    @ApiModelProperty(value = "学生的id",required = true)
-    private Long StudentId;
+    @ApiModelProperty(value = "学生的用户名",required = true)
+    private String StudentName;
 
-    @ApiModelProperty(value = "教师的id")
-    private Long TeacherId;
+    @ApiModelProperty(value = "教师的用户名")
+    private String TeacherName;
 }

@@ -28,7 +28,12 @@ public class TeacherStudent implements Serializable {
     /**
      * 学生id
      */
-    private Long studetId;
+    private Long studentId;
+
+    /**
+     * 逻辑删除  0 未删除 1 已删除
+     */
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

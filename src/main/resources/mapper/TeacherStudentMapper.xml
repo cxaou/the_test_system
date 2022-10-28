@@ -7,10 +7,15 @@
     <resultMap id="BaseResultMap" type="com.cxaou.thetestsystem.pojo.TeacherStudent">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="thacherId" column="thacher_id" jdbcType="BIGINT"/>
-            <result property="studetId" column="studet_id" jdbcType="BIGINT"/>
+            <result property="studentId" column="student_id" jdbcType="BIGINT"/>
+            <result property="isDelete" column="is_delete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,thacher_id,studet_id
     </sql>
+    <select id="searchStudentIdByThacherId" resultType="java.lang.Long">
+        SELECT studet_id from teacher_student WHERE thacher_id = #{ThacherId}
+    </select>
+
 </mapper>

@@ -12,4 +12,6 @@
     <sql id="Base_Column_List">
         id,user_id
     </sql>
+
+
 </mapper>

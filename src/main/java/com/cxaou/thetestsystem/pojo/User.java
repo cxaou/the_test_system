@@ -1,16 +1,15 @@
 package com.cxaou.thetestsystem.pojo;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -65,10 +64,6 @@ public class User implements Serializable {
     @ApiModelProperty("头像")
     private String headPortrait;
 
-
-    @ApiModelProperty("token")
-    @TableField(exist = false)
-    private String token;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

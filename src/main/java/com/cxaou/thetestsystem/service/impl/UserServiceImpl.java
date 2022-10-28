@@ -67,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             teacher.setUserId(user.getId());
             teacherService.save(teacher);
         }
-        if (identity == 0){ //学生
+        if (identity == 2){ //学生
             Student student = new Student();
             student.setUserId(user.getId());
             studentService.save(student);

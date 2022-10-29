@@ -66,6 +66,7 @@ public class TeacherController {
         if (currentUser.getIdentity() == 2) { // 学生
             return R.error("没有删除用户的权限");
         }
+
         // 如果是教师，逻辑删除自己的学生
         // 教师id跟userId
         Long studentId = teacherStudent.getStudentId();
@@ -109,8 +110,13 @@ public class TeacherController {
     public R<Page<User>> getStudent(HttpServletRequest request, int page, int pageSize, String name) {
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
-        Page<User> pageInfo = new Page<>(page, pageSize);
-        studentService.getStudentByCurrentUser(currentUserId, pageInfo, name);
+        User user = userService.getById(currentUserId);
+        if (user.getIdentity() == 2){
+            return R.error("没有权限");
+        }
+        Page<User>  pageInfo = new Page<>(page, pageSize);
+        userService.getPageUser(user, pageInfo, name,2);
+
         return R.success(pageInfo);
     }
 }

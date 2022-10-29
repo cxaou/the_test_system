@@ -1,8 +1,11 @@
 package com.cxaou.thetestsystem.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cxaou.thetestsystem.erro.ParameterException;
+import com.cxaou.thetestsystem.mapper.TeacherStudentMapper;
 import com.cxaou.thetestsystem.mapper.UserMapper;
 import com.cxaou.thetestsystem.pojo.Student;
 import com.cxaou.thetestsystem.pojo.Teacher;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -37,6 +41,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private TeacherStudentMapper teacherStudentMapper;
+
+    /**
+     * 登录方法
+     * @param user 用户信息
+     * @return 返回数据库中的用户信息
+     */
     @Override
     public User login(LogVo user) {
         try {
@@ -51,6 +63,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
     }
 
+    /**
+     * 注册
+     * @param user
+     */
     @Override
     public void signIn(LogVo user) {
         // 保存 用户信息
@@ -99,6 +115,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     /**
+     * 禁用用户信息
+     * @param user
+     */
+    @Override
+    public void disableUser(User user) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getId,user.getId());
+        this.update(user,lambdaQueryWrapper);
+    }
+
+    /**
+     * 判断用户账号的状态
+     * @param id 用户id
+     * @return 正常true ， 异常 false
+     */
+    @Override
+    public boolean isUserState(Long id) {
+        User user = this.getById(id);
+        return user.getUserState() == 0;
+    }
+
+    /**
      * 检验用户身份是否合法
      * @param user 用户
      * @param identity 身份
@@ -110,6 +148,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         return true;
     }
+
+    /**
+     * 分页查询
+     * @param user 登录者
+     * @param pageInfo 分页对象
+     * @param name 模糊查询
+     * @param identity 要查询的人的身份 1 教师 2 学生
+     */
+    @Override
+    public void getPageUser(User user, Page<User> pageInfo, String name, int identity) {
+        // 根据当前用户的id查出对应的用户信息，在进行身份判断
+
+        Integer userIdentity = user.getIdentity();
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(name != null,User::getUsername,name) //模糊查询
+                .eq(User::getUserState,0);
+        // 如果当前用户是admin就可以查出所有人列表
+        if (userIdentity == 0){
+            // 先查询出所用学生id对应的用户id
+            if(identity != 3){
+                queryWrapper.eq(User::getIdentity, identity); // 等于2 身份就是学生
+            }
+
+        }
+        // 如果当前用户是教师，就查出教师对应的学生信息
+        if (userIdentity == 1){
+            //先在教师学生表中查询教师对应的学生id
+            List<Long> studentIds = teacherStudentMapper.searchStudentIdByThacherId(user.getId());
+            // 在根据学生id查询在用户表查询用户的信息
+            queryWrapper.in(User::getId,studentIds);
+        }
+        //返回 分页对象
+        this.page(pageInfo, queryWrapper);
+    }
+
 
 }
 

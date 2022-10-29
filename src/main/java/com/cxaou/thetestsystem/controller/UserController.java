@@ -107,7 +107,7 @@ public class UserController {
     }
 
     /***
-     * 身份验证失败的接口
+     * 身份验证失败的接口，内部接口
      * @param request
      * @return
      */

@@ -10,9 +10,7 @@ import com.cxaou.thetestsystem.utils.VerifyUtils;
 import com.cxaou.thetestsystem.utils.TokenUtil;
 import com.cxaou.thetestsystem.vo.LogVo;
 import com.sun.xml.internal.bind.v2.TODO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +80,7 @@ public class UserController {
             return R.error("账号不存在");
         }
         // 判断账号状态
-        if (userOne.getUserState() == 1){
+        if (userOne.getUserState() == 1) {
             return R.error("该账号已经被禁用了");
         }
         String password = MD5Util.getMD5Str(user.getPassword());
@@ -97,7 +95,7 @@ public class UserController {
         redisTemplate.opsForValue().set(token, userOne.getId(), 3, TimeUnit.DAYS);
         UserDto userDto = new UserDto();
         // 拷贝对象
-        BeanUtils.copyProperties(userOne,userDto);
+        BeanUtils.copyProperties(userOne, userDto);
         userDto.setToken(token);
         // 用户登录成功,删除redis 的验证码
         if (phone != null) {
@@ -192,13 +190,50 @@ public class UserController {
         return R.success("成功");
     }
 
-    public R<User> setUsername(){
-        // TODO 修改 用户名
-        return null;
+    @ApiOperation(value = "修改用户名")
+    @ApiImplicitParam(value = "要修改的名字", name = "username")
+    @PutMapping("/username")
+    public R<User> setUsername(HttpServletRequest request, String username) {
+        String token = request.getHeader("token");
+        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
+        User currentUser = userService.getById(currentUserId);
+        if (!VerifyUtils.isUsername(username)) {
+            return R.error("用户名必须是5-20位的数字，字母或者下划线");
+        }
+        currentUser.setUsername(username);
+        boolean isUpdate = userService.saveOrUpdate(currentUser);
+        return isUpdate ? R.success(currentUser) : R.error("修改失败");
     }
 
-    public R<User> setPassword(){
-        // TODO 修改密码
-        return null;
+    @ApiOperation("修改密码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPassword", value = "旧密码密码"),
+            @ApiImplicitParam(name = "newPassword", value = "要修改的密码")
+    })
+    @PutMapping("/password")
+    public R<User> setPassword(HttpServletRequest request, String oldPassword, String newPassword) {
+        if (!VerifyUtils.verifyPassword(newPassword)) {
+            return R.error("密码不合法");
+        }
+        if (!StringUtils.hasText(oldPassword)){
+            return R.error("密码为空");
+        }
+        String token = request.getHeader("token");
+        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
+
+        String md5NewPassword = MD5Util.getMD5Str(newPassword);
+        String md5OldPassword = MD5Util.getMD5Str(oldPassword);
+
+        User currentUser = userService.getById(currentUserId);
+
+        if (!md5OldPassword.equals(currentUser.getPassword())) {
+            return R.error("密码错误");
+        }
+        if (md5NewPassword.equals(currentUser.getPassword())){
+            return R.error("新密码跟旧密码一样");
+        }
+        currentUser.setPassword(md5NewPassword);
+        boolean isPassword = userService.saveOrUpdate(currentUser);
+        return isPassword ? R.success(currentUser) : R.error("修改失败");
     }
 }

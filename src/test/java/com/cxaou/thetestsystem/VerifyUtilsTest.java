@@ -14,4 +14,9 @@ public class VerifyUtilsTest {
         System.out.println("b = " + b);
     }
 
+    @Test
+    void usernameTest(){
+        boolean a = VerifyUtils.isUsername("abaaa_65");
+        System.out.println("a = " + a);
+    }
 }

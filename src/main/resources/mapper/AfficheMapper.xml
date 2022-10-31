@@ -12,12 +12,38 @@
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="data" column="data" jdbcType="VARCHAR"/>
+            <result property="afficheStatic" column="affiche_static" jdbcType="INTEGER"/>
             <result property="isDelete" column="is_delete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_id,update_id,
         create_time,update_time,type,
-        data,is_delete
+        data,affiche_static
     </sql>
+    <select id="getNewSystemAffiche" resultType="com.cxaou.thetestsystem.pojo.Affiche">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+            affiche
+        WHERE
+            is_delete = 0
+            AND update_time = ( SELECT max( update_time ) FROM affiche WHERE type = #{type} )
+    </select>
+    <select id="getNeWTeacherAffiche" resultType="com.cxaou.thetestsystem.pojo.Affiche">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+            affiche
+        WHERE
+            is_delete = 0
+            AND affiche_static = 0
+            AND type = #{type}
+            AND create_id in
+            <foreach collection="teacherList" item="teacherId" separator="," open="(" close=")">
+                #{teacherId}
+            </foreach>
+
+    </select>
+
 </mapper>

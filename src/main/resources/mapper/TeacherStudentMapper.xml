@@ -14,8 +14,12 @@
     <sql id="Base_Column_List">
         id,thacher_id,student_id
     </sql>
-    <select id="searchStudentIdByThacherId" resultType="java.lang.Long">
-        SELECT student_id from teacher_student WHERE is_delete=0 and  thacher_id = #{ThacherId}
+    <select id="selectStudentIdByThacherId" resultType="java.lang.Long">
+        SELECT student_id from teacher_student WHERE is_delete=0 and  thacher_id = #{thacherId}
     </select>
+    <select id="selectThacherIdByStudentId" resultType="java.lang.Long">
+        SELECT thacher_id FROM teacher_student WHERE is_delete=0 and  student_id = #{studentId}
+    </select>
+
 
 </mapper>

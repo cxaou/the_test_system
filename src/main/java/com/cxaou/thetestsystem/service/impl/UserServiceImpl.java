@@ -1,7 +1,6 @@
 package com.cxaou.thetestsystem.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cxaou.thetestsystem.erro.ParameterException;
@@ -175,7 +174,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 如果当前用户是教师，就查出教师对应的学生信息
         if (userIdentity == 1){
             //先在教师学生表中查询教师对应的学生id
-            List<Long> studentIds = teacherStudentMapper.searchStudentIdByThacherId(user.getId());
+            List<Long> studentIds = teacherStudentMapper.selectStudentIdByThacherId(user.getId());
             // 在根据学生id查询在用户表查询用户的信息
             queryWrapper.in(User::getId,studentIds);
         }

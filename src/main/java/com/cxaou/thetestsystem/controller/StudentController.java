@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Api(tags = "教师操作的接口")
+@Api(tags = "学生接口")
 @RequestMapping("/teacher")
 @RestController
 @Slf4j
-public class TeacherController {
+public class StudentController {
 
     @Autowired
     private RedisTemplate redisTemplate;

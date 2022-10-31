@@ -9,6 +9,7 @@ import com.cxaou.thetestsystem.utils.MsmConstantUtils;
 import com.cxaou.thetestsystem.utils.VerifyUtils;
 import com.cxaou.thetestsystem.utils.TokenUtil;
 import com.cxaou.thetestsystem.vo.LogVo;
+import com.sun.xml.internal.bind.v2.TODO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -189,5 +190,15 @@ public class UserController {
         //注册成功 删除验证码
         redisTemplate.delete(phone);
         return R.success("成功");
+    }
+
+    public R<User> setUsername(){
+        // TODO 修改 用户名
+        return null;
+    }
+
+    public R<User> setPassword(){
+        // TODO 修改密码
+        return null;
     }
 }

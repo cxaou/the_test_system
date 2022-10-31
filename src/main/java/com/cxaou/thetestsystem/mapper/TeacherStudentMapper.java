@@ -13,7 +13,20 @@ import java.util.List;
 @Repository
 public interface TeacherStudentMapper extends BaseMapper<TeacherStudent> {
 
-    List<Long> searchStudentIdByThacherId(@Param("ThacherId") Long ThacherId);
+    /**
+     * 查询出教师对应的学生id
+     * @param thacherId 教师id
+     * @return 学生id的集合
+     */
+    List<Long> selectStudentIdByThacherId(@Param("thacherId") Long thacherId);
+
+    /**
+     * 查询出学生id对应的教师id
+     * @param studentId 学生的id
+     * @return 教师id的集合
+     */
+    List<Long> selectThacherIdByStudentId(@Param("studentId") Long studentId);
+
 }
 
 

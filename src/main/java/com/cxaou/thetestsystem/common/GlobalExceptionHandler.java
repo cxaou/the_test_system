@@ -2,6 +2,7 @@ package com.cxaou.thetestsystem.common;
 
 import com.cxaou.thetestsystem.erro.ParameterException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,6 +33,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParameterException.class)  // 要处理的异常
     public R<String> exceptionHandler(ParameterException ex){
         return R.error(ex.getMessage());
+    }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public R<String> exceptionHandler(HttpMessageNotReadableException ex){
+        return R.error(ex.getMessage());
     }
 }

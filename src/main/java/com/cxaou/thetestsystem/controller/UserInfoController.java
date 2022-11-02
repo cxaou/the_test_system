@@ -1,7 +1,6 @@
 package com.cxaou.thetestsystem.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cxaou.thetestsystem.common.R;
 import com.cxaou.thetestsystem.pojo.UserInfo;
 import com.cxaou.thetestsystem.service.UserInfoService;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
 @Api(tags = "用户详情")
-@RequestMapping("/userInfo")
+@RequestMapping("/user_info")
 @RestController
 @Slf4j
 public class UserInfoController {

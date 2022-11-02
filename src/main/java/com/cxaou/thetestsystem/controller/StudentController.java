@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @Api(tags = "学生接口")
-@RequestMapping("/teacher")
+@RequestMapping("/student")
 @RestController
 @Slf4j
 public class StudentController {

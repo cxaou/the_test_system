@@ -215,7 +215,7 @@ public class UserController {
         if (!VerifyUtils.verifyPassword(newPassword)) {
             return R.error("密码不合法");
         }
-        if (!StringUtils.hasText(oldPassword)){
+        if (!StringUtils.hasText(oldPassword)) {
             return R.error("密码为空");
         }
         String token = request.getHeader("token");
@@ -229,7 +229,7 @@ public class UserController {
         if (!md5OldPassword.equals(currentUser.getPassword())) {
             return R.error("密码错误");
         }
-        if (md5NewPassword.equals(currentUser.getPassword())){
+        if (md5NewPassword.equals(currentUser.getPassword())) {
             return R.error("新密码跟旧密码一样");
         }
         currentUser.setPassword(md5NewPassword);

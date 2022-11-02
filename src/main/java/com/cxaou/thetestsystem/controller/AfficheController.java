@@ -108,7 +108,7 @@ public class AfficheController {
         }
         Page<Affiche> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<Affiche> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(Affiche::getData, name);
+        queryWrapper.like(name != null,Affiche::getData, name);
         afficheService.page(pageInfo);
         return R.success(pageInfo);
     }

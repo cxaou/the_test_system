@@ -14,10 +14,11 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/userExaminationPaper")
+@RequestMapping("/user_examinationPaper")
 @Api(tags = "用户的考试")
 public class UserExaminationPaperController {
 
+    // TODO 查询用户要参加考试的试卷
     @GetMapping
     @ApiOperation("查看我的考试")
     public List<R<UserExaminationPaper>> getUserExaminationPaper(){

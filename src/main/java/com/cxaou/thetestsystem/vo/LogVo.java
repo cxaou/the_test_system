@@ -4,12 +4,14 @@ import com.cxaou.thetestsystem.pojo.User;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @ApiModel("登录用的vo")
 @Data
-public class LogVo extends User implements Serializable {
+public class LogVo extends User  {
 
 
     /**

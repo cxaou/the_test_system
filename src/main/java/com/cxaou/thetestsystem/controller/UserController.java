@@ -1,25 +1,31 @@
 package com.cxaou.thetestsystem.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cxaou.thetestsystem.common.R;
+import com.cxaou.thetestsystem.dto.UserDto;
 import com.cxaou.thetestsystem.pojo.User;
-import com.cxaou.thetestsystem.service.StudentService;
 import com.cxaou.thetestsystem.service.UserService;
 import com.cxaou.thetestsystem.utils.MD5Util;
+import com.cxaou.thetestsystem.utils.MsmConstantUtils;
+import com.cxaou.thetestsystem.utils.TokenUtil;
+import com.cxaou.thetestsystem.utils.VerifyUtils;
+import com.cxaou.thetestsystem.vo.LogVo;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.TimeUnit;
 
-@RestController
-@RequestMapping("/admin")
 @Slf4j
-@Api(tags = "管理员操作的接口")
-@CrossOrigin(origins = "*")
-public class AdminController {
+@Api(tags = "用户操作接口")
+@RequestMapping("/user")
+@RestController()
+public class UserController {
 
     @Autowired
     private UserService userService;
@@ -27,69 +33,206 @@ public class AdminController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    private StudentService studentService;
+    @Value("${SSM.StartSSM: false}")
+    private Boolean StartSSM;
 
-    // 禁用用户
-    @ApiOperation(value = "禁用用户/启用用户", notes = "只用传入用户id跟要修改的状态")
-    @PutMapping
-    public R<String> disableUser(@RequestBody User user, HttpServletRequest request) {
-        Long userId = user.getId();
-        if (userId == null) {
-            return R.error("用户id为空");
+
+    @PostMapping("/login")
+    @ApiOperation("登录用的接口")
+    public R<User> login(@RequestBody LogVo user) {
+
+        String code = user.getCode();
+
+        Integer type = user.getType();
+
+        if (type == null) {
+            return R.error("登录方式为空");
         }
-        String token = request.getHeader("token");
-        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
-        User currentUser = userService.getById(currentUserId);
-        if (currentUser.getIdentity() != 0) {
-            return R.error("不是管理员");
+
+
+        String phone = null;
+        if (type == 0) {
+            if (!StringUtils.hasText(code)) {
+                return R.error("验证码为空");
+            }
+            phone = user.getPhone();
+
+            if (!VerifyUtils.verifyPhone(phone)) {
+                return R.error("手机号不合法");
+            }
+
+            String codeRedis = (String) redisTemplate.opsForValue().get(phone);
+            R<User> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
+            if (r_start != null) {
+                return r_start;
+            }
+
+
         }
-        userService.disableUser(user);
+
+        if (!StringUtils.hasText(user.getPassword())) {
+            return R.error("密码为空");
+        }
+
+        User userOne = userService.login(user);
+        if (userOne == null) {
+            return R.error("账号不存在");
+        }
+        // 判断账号状态
+        if (userOne.getUserState() == 1) {
+            return R.error("该账号已经被禁用了");
+        }
+        String password = MD5Util.getMD5Str(user.getPassword());
+        if (!password.equals(userOne.getPassword())) {
+            return R.error("账号或密码错误");
+        }
+        //把查询出来的密码置空
+        userOne.setPassword("");
+        String token = TokenUtil.sign(userOne.getId());
+        log.info("token: " + token);
+        // 设置过期时间为3天
+        redisTemplate.opsForValue().set(token, userOne.getId(), 3, TimeUnit.DAYS);
+        UserDto userDto = new UserDto();
+        // 拷贝对象
+        BeanUtils.copyProperties(userOne, userDto);
+        userDto.setToken(token);
+        // 用户登录成功,删除redis 的验证码
+        if (phone != null) {
+            redisTemplate.delete(phone);
+        }
+
+        return R.success(userDto);
+    }
+
+    /***
+     * 身份验证失败的接口，内部接口
+     * @param request
+     * @return
+     */
+    @ApiParam(hidden = true)
+    @GetMapping("/index")
+    public R<String> index(HttpServletRequest request) {
+        return R.error(request.getAttribute("msg").toString());
+    }
+
+    @ApiOperation("发送手机验证码")
+    @PostMapping("/sendMsg")
+    public R<String> sendMsg(@RequestBody LogVo logUser) {
+        // 获取手机号
+        String phone = logUser.getPhone();
+
+        // 手机号校验
+        if (!VerifyUtils.verifyPhone(phone)) {
+            return R.error("手机号不合法");
+        }
+
+        String phoneRedis = (String) redisTemplate.opsForValue().get(phone);
+        if (phoneRedis != null) { // 不等于null ，证明获取过验证码
+            return R.error("请不要重复获取验证码");
+        }
+        String code = MsmConstantUtils.generateValidateCode(6);
+        log.info(code);
+
+        if (StartSSM) {
+            MsmConstantUtils.sendPhone(code, phone);
+        }
+        // 设置验证码时效为一分钟
+        redisTemplate.opsForValue().set(phone, code, 1, TimeUnit.MINUTES);
+        return R.success("手机验证码发送成功");
+    }
+
+    @ApiOperation("注册")
+    @PostMapping("/signIn")
+    public R<String> signIn(@RequestBody LogVo user) {
+        String code = user.getCode();
+
+        if (!StringUtils.hasText(code)) {
+            return R.error("验证码为空");
+        }
+
+        String phone = user.getPhone();
+        String codeRedis = (String) redisTemplate.opsForValue().get(phone);
+        //校验验证码和手机号
+        R<String> r_start = VerifyUtils.verifyPhoneAndCode(phone, codeRedis, code);
+        if (r_start != null) {
+            return r_start;
+        }
+
+        Integer identity = user.getIdentity();
+        if (identity == null) {
+            return R.error("身份信息为空");
+        }
+        if (!(identity == 1 || identity == 2)) {
+            return R.error("身份不合法");
+        }
+
+        //校验密码格式
+        String signInPassword = user.getPassword();
+        if (!VerifyUtils.verifyPassword(signInPassword)) {
+            return R.error("密码不合法");
+        }
+
+
+        // 默认手机号做用户名
+        user.setUsername(phone);
+        // 默认0 启用
+        user.setUserState(0);
+        // 设置默认头像
+        user.setHeadPortrait("aa.png");
+        //保存用户
+        user.setPassword(MD5Util.getMD5Str(user.getPassword()));
+        // 保存用户的同时，创建一条用户详情的记录
+        userService.signIn(user);
+
+        //注册成功 删除验证码
+        redisTemplate.delete(phone);
         return R.success("成功");
     }
 
-    @ApiOperation("获取所有用户")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页码", required = true),
-            @ApiImplicitParam(name = "pageSize", value = "每页的条数", required = true),
-            @ApiImplicitParam(name = "name", value = "搜索框，模糊查询"),
-            @ApiImplicitParam(name = "identity", value = "要查看的身份 0(查看所有管理员) 1(查看所有教师) 2(查看所有学生) 3(查看所有成员·)")
-    })
-    // 获取到所有用户
-    @GetMapping("/allUser")
-    public R<Page<User>> getUserAll(int page, int pageSize, String name, int identity, HttpServletRequest request) {
+    @ApiOperation(value = "修改用户名")
+    @ApiImplicitParam(value = "要修改的名字", name = "username")
+    @PutMapping("/username")
+    public R<User> setUsername(HttpServletRequest request, String username) {
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
-        Page<User> pageInfo = new Page<>(page, pageSize);
         User currentUser = userService.getById(currentUserId);
-        if (currentUser.getIdentity() != 0) {
-            return R.error("权限不够");
+        if (!VerifyUtils.isUsername(username)) {
+            return R.error("用户名必须是5-20位的数字，字母或者下划线");
         }
-        userService.getPageUser(currentUser, pageInfo, name, identity);
-        return R.success(pageInfo);
+        currentUser.setUsername(username);
+        boolean isUpdate = userService.saveOrUpdate(currentUser);
+        return isUpdate ? R.success(currentUser) : R.error("修改失败");
     }
 
-
-    @ApiOperation(value = "重置用户的密码", notes = "重置用户名密码为000000，admin 才有该操作该接口的权限")
-    @PutMapping("/reset_password")
-    public R<String> resetPassword(@RequestBody User user, HttpServletRequest request) {
+    @ApiOperation("修改密码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPassword", value = "旧密码密码"),
+            @ApiImplicitParam(name = "newPassword", value = "要修改的密码")
+    })
+    @PutMapping("/password")
+    public R<User> setPassword(HttpServletRequest request, String oldPassword, String newPassword) {
+        if (!VerifyUtils.verifyPassword(newPassword)) {
+            return R.error("密码不合法");
+        }
+        if (!StringUtils.hasText(oldPassword)) {
+            return R.error("密码为空");
+        }
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
-        User currentUser = userService.getById(currentUserId);
-        if (currentUser.getIdentity() != 0) {
-            return R.error("权限不够");
-        }
-        if (user.getId() == null) {
-            return R.error("参数不合法");
-        }
-        User updateUser = userService.getById(user.getId());
-        if (updateUser == null) {
-            return R.error("要修改的用户不存在");
-        }
-        String initialPassword = MD5Util.getMD5Str("000000");
-        updateUser.setPassword(initialPassword);
-        userService.saveOrUpdate(updateUser);
-        return R.success("保存成功");
 
+        String md5NewPassword = MD5Util.getMD5Str(newPassword);
+        String md5OldPassword = MD5Util.getMD5Str(oldPassword);
+
+        User currentUser = userService.getById(currentUserId);
+
+        if (!md5OldPassword.equals(currentUser.getPassword())) {
+            return R.error("密码错误");
+        }
+        if (md5NewPassword.equals(currentUser.getPassword())) {
+            return R.error("新密码跟旧密码一样");
+        }
+        currentUser.setPassword(md5NewPassword);
+        boolean isPassword = userService.saveOrUpdate(currentUser);
+        return isPassword ? R.success(currentUser) : R.error("修改失败");
     }
 }

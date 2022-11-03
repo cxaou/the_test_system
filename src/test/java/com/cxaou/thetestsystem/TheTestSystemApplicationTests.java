@@ -6,7 +6,12 @@ import com.cxaou.thetestsystem.utils.TokenUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,6 +47,15 @@ class TheTestSystemApplicationTests {
         System.out.println("parse = " + parse);
     }
 
+
+    @Test
+    void ListTest(){
+        List<Long> students = new ArrayList<>(Arrays.asList(6L,7L,8L,1L,2L,3L));
+        List<Long> b = new ArrayList<>(Arrays.asList(1L,2L,3L,4L));
+        students.retainAll(b);
+        System.out.println("a.size() = " + students.size());
+        System.out.println("b = " + b.size());
+    }
 
 
 }

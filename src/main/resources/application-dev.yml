@@ -9,6 +9,8 @@ server:
 spring:
   application:
     name: the_test_system
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
 swagger:
   enable: true # 是否开启swagger
 reggie:

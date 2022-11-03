@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cxaou.thetestsystem.common.R;
 import com.cxaou.thetestsystem.dto.TestQuestionsDto;
 import com.cxaou.thetestsystem.pojo.ExaminationPaper;
-import com.cxaou.thetestsystem.pojo.User;
 import com.cxaou.thetestsystem.service.ExaminationPaperService;
 import com.cxaou.thetestsystem.service.UserService;
-import com.cxaou.thetestsystem.utils.VerifyExaminationPaper;
+import com.cxaou.thetestsystem.utils.VerifyExaminationPaperUtils;
 import com.cxaou.thetestsystem.vo.ExaminationPaperVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,7 +78,7 @@ public class ExaminationPaperController {
             "    \"type\":\"1+x\"\n" +
             "}")
     public R<String> addExaminationPaper(@RequestBody ExaminationPaperVo examinationPaperVo, HttpServletRequest request) {
-        if (!VerifyExaminationPaper.verifyExaminationVoPaper(examinationPaperVo)) {
+        if (!VerifyExaminationPaperUtils.verifyExaminationVoPaper(examinationPaperVo)) {
             return R.error("参数不合法");
         }
         String token = request.getHeader("token");
@@ -107,7 +106,7 @@ public class ExaminationPaperController {
             "}")
     @PutMapping
     public R<String> updateExaminationPaper(@RequestBody ExaminationPaper examinationPaper, HttpServletRequest request) {
-        if (VerifyExaminationPaper.isNullCoreExaminationPaper(examinationPaper)) {
+        if (VerifyExaminationPaperUtils.isNullCoreExaminationPaper(examinationPaper)) {
             return R.error("参数不合法");
         }
         String token = request.getHeader("token");
@@ -131,14 +130,8 @@ public class ExaminationPaperController {
 
 
     @GetMapping("/all")
-    @ApiOperation(value = "获取所有的试卷列表", notes = "admin 有该接口的操作权限")
+    @ApiOperation(value = "获取所有的试卷列表")
     public R<Page<ExaminationPaper>> getAllExaminationPaper(Integer page, Integer pageSize, String title, HttpServletRequest request) {
-        String token = request.getHeader("token");
-        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
-        User currentUser = userService.getById(currentUserId);
-        if (currentUser.getIdentity() != 0) {
-            return R.error("权限不够");
-        }
         Page<ExaminationPaper> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<ExaminationPaper> examinationPaperLambdaQueryWrapper = new LambdaQueryWrapper<>();
         examinationPaperLambdaQueryWrapper.like(title != null, ExaminationPaper::getTitle, title);
@@ -147,7 +140,7 @@ public class ExaminationPaperController {
     }
 
 
-    @GetMapping("own_all")
+    @GetMapping("/own_all")
     @ApiOperation("获取到自己发布的所有试卷列表")
     public R<Page<ExaminationPaper>> getOwnAllExaminationPaper(Integer page, Integer pageSize, String title, HttpServletRequest request) {
         String token = request.getHeader("token");

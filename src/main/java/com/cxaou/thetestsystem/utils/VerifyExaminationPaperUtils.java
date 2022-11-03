@@ -6,7 +6,7 @@ import com.cxaou.thetestsystem.vo.ExaminationPaperVo;
 
 import java.util.List;
 
-public class VerifyExaminationPaper {
+public class VerifyExaminationPaperUtils {
 
     /**
      * 验证 examinationPaperVo 参数是否合法

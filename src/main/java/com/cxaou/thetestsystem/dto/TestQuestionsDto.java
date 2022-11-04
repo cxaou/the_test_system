@@ -24,4 +24,7 @@ public class TestQuestionsDto extends TestQuestions{
      */
     @ApiModelProperty(" 选项，答案，只有选择题有")
     private Map<String,Object> optionsMap;
+
+    @ApiModelProperty("selected")
+    private boolean  selected;
 }

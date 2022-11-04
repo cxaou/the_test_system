@@ -10,10 +10,9 @@ public class DateUtils {
      * @param startTime 开始考试的时间
      * @return 开始 true ， 否则 false
      */
-    public static boolean is_stare(LocalDateTime startTime){
+    public static boolean isStare(LocalDateTime startTime){
         Duration duration = Duration.between(LocalDateTime.now(),startTime);
         // 如果小于0 说明 不满足要求
-        System.out.println("duration.toMillis() = " + duration.toMillis());
         return duration.toMillis() <= 0;
     }
 
@@ -39,6 +38,33 @@ public class DateUtils {
         Instant instant = date.toInstant();
         ZoneId zoneId = ZoneId.systemDefault();
         return instant.atZone(zoneId).toLocalDateTime();
+    }
+
+    /**
+     * 判断是否超时
+     * @param startTime 传入的时间
+     * @return 超时 ? true:false
+     */
+    public static boolean isTimeout(LocalDateTime startTime){
+        Duration duration = Duration.between(LocalDateTime.now(),startTime);
+        // 如果小于0 说明 不满足要求
+        System.out.println("duration.toMillis() = " + duration.toMinutes());
+        return duration.toMinutes() <= 15;
+    }
+
+    public static String convertMillis(Long duration) {
+        if (duration != null) {
+            long hour = duration/ 3600;
+            long minute = (duration % 3600) / 60;
+            long second = (duration % 3600) % 60;
+
+            String hourStr = hour == 0 ? "00" : hour > 10 ? hour + "" : "0" + hour;
+            String minuteStr = minute == 0 ? "00" : minute > 10 ? minute + "" : "0" + minute;
+            String secondStr = second == 0 ? "00" : second > 10 ? second + "" : "0" + second;
+
+            return hourStr + ":" + minuteStr + ":" + secondStr;
+        }
+        return null;
     }
 
 }

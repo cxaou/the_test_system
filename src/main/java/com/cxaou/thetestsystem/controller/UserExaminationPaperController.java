@@ -4,14 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cxaou.thetestsystem.common.R;
 import com.cxaou.thetestsystem.dto.ExaminationInfoDto;
+import com.cxaou.thetestsystem.dto.TestQuestionsDto;
 import com.cxaou.thetestsystem.mapper.TeacherStudentMapper;
-import com.cxaou.thetestsystem.pojo.TeacherStudent;
-import com.cxaou.thetestsystem.pojo.User;
-import com.cxaou.thetestsystem.pojo.UserExaminationPaper;
-import com.cxaou.thetestsystem.service.TeacherStudentService;
-import com.cxaou.thetestsystem.service.TestQuestionsService;
-import com.cxaou.thetestsystem.service.UserExaminationPaperService;
-import com.cxaou.thetestsystem.service.UserService;
+import com.cxaou.thetestsystem.pojo.*;
+import com.cxaou.thetestsystem.service.*;
+import com.cxaou.thetestsystem.utils.DateUtils;
+import com.cxaou.thetestsystem.utils.VerifyTestQuestionsDto;
 import com.cxaou.thetestsystem.utils.VerifyUserExaminationPaperVoUtils;
 import com.cxaou.thetestsystem.vo.ExaminationPaperVo;
 import com.cxaou.thetestsystem.vo.UserExaminationPaperVo;
@@ -23,6 +21,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -50,6 +52,12 @@ public class UserExaminationPaperController {
     @Autowired
     private TeacherStudentService teacherStudentService;
 
+    @Autowired
+    private ExaminationPaperService examinationPaperService;
+
+    @Autowired
+    private StudentScoreService studentScoreService;
+
 
     @PostMapping(value = "/add_own_student")
     @ApiOperation(value = "给自己所有学生添加考试", notes = "只有教师有操作该权限的资格\n参数示例： \n{\n" +
@@ -73,7 +81,7 @@ public class UserExaminationPaperController {
         // 查询自己的学生
         List<Long> userIds =
                 teacherStudentMapper.selectStudentIdByThacherId(currentUserId);
-        userExaminationPaperService.addUserExaminationPaper(userExaminationPaperVo, userIds);
+        userExaminationPaperService.addUserExaminationPaper(userExaminationPaperVo, userIds, currentUserId);
 
         return R.success("添加成功");
     }
@@ -90,6 +98,7 @@ public class UserExaminationPaperController {
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
         User currentUser = userService.getById(currentUserId);
+        // 时间转换
         R<String> result = VerifyUserExaminationPaperVoUtils.verifyCoreAndShift(userExaminationPaperVo);
         if (result != null) {
             return result;
@@ -118,7 +127,7 @@ public class UserExaminationPaperController {
                 return R.error("用户不存在");
             }
         }
-        boolean isAdd = userExaminationPaperService.addUserExaminationPaper(userExaminationPaperVo, userIds);
+        boolean isAdd = userExaminationPaperService.addUserExaminationPaper(userExaminationPaperVo, userIds, currentUserId);
         return isAdd ? R.success("添加成功") : R.error("添加失败");
     }
 
@@ -139,7 +148,7 @@ public class UserExaminationPaperController {
 
 
     @GetMapping("/user_examination")
-    @ApiOperation(value = "根据id查询考试信息", notes = "教师跟admin有权限\n" +
+    @ApiOperation(value = "根据id查询学生的考试信息", notes = "教师跟admin有权限\n" +
             "examinationStart  条件筛选， 0 开始的考试 1 未开始的考试 2 结束的考试 ")
     public R<Page<ExaminationInfoDto>> getUserExaminationPaperById(HttpServletRequest request, Long userId,
                                                                    Integer page, Integer pageSize, Integer examinationStart) {
@@ -169,7 +178,7 @@ public class UserExaminationPaperController {
         return R.success(dtoPage);
     }
 
-    //  TODO 开始考试
+
     /*
     提交考试id，根据这个字段判断是否开始考试，
     // 然后找到试卷信息
@@ -196,19 +205,194 @@ public class UserExaminationPaperController {
             return R.error("考试已结束");
         }
         ExaminationPaperVo topic = testQuestionsService.getTopic(userExaminationPaper.getExamintionPaperId());
+        topic.setUserExaminationPaperId(userExaminationPaperId);
         return R.success(topic);
     }
 
-    // TODO 修改考试信息 教师 跟 admin 有权限
+
     @PutMapping()
-    public R<String> update() {
-      // 教师只能修改自己学生的，admin可以修改所有的
-        // 查询到自己学生的，
-        return R.success("成功");
+    @ApiOperation(value = "修改考试信息", notes = "参数示例：先查询学生的考试信息\n\t\"acceptStartTime\": \"2022-11-5 15:00:00\",\n" +
+            "\t\"id\": 1588377490409127937,\n    // 用户考试的id" +
+            "         \"examinationPaperId\":1,   //试卷的id \n" +
+            "\"userIds\": [1]\n  // 学生的id，只传入一个就可")
+    public R<String> update(HttpServletRequest request, @RequestBody UserExaminationPaperVo userExaminationPaperVo) {
+        // 查看学生的考试
+        String token = request.getHeader("token");
+        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
+        User currentUser = userService.getById(currentUserId);
+        if (currentUser.getIdentity() == 2) {
+            return R.error("没有权限");
+        }
+        // 时间转换
+        R<String> result = VerifyUserExaminationPaperVoUtils.verifyCoreAndShift(userExaminationPaperVo);
+        if (result != null) {
+            return result;
+        }
+        // 教师只能修改自己学生的(也就是自己发布的)，admin可以修改所有的
+        // 查询考试存在不
+        UserExaminationPaper userExaminationPaper = userExaminationPaperService.getById(userExaminationPaperVo.getId());
+
+        if (userExaminationPaper == null) {
+            return R.error("参数不合法");
+        }
+
+        List<Long> userIds = userExaminationPaperVo.getUserIds();
+        if (userIds == null) {
+            return R.error("没有学生");
+        }
+        for (Long userId : userIds) {
+            if (!userExaminationPaper.getUserId().equals(userId)) {
+                return R.error("参数不合法");
+            }
+        }
+        if (currentUser.getIdentity() == 1) { // 教师
+            if (!userExaminationPaper.getCreateId().equals(currentUserId)) {
+                return R.error("权限不够");
+            }
+        }
+
+        boolean isUpdate = userExaminationPaperService.addUserExaminationPaper(userExaminationPaperVo, userIds, currentUserId);
+
+        return isUpdate ? R.success("成功") : R.error("失败");
     }
-    // TODO 删除考试信息
 
-    // TODO 提交考试，并评分,记录到成绩表中
 
+    @DeleteMapping
+    @ApiOperation("删除考试")
+    public R<String> delete(HttpServletRequest request, Long id) {
+        String token = request.getHeader("token");
+        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
+        User currentUser = userService.getById(currentUserId);
+        if (currentUser.getIdentity() == 2) {
+            return R.error("没有权限");
+        }
+        UserExaminationPaper userExaminationPaper = userExaminationPaperService.getById(id);
+        if (userExaminationPaper == null) {
+            return R.error("参数有误");
+        }
+
+        if (currentUser.getIdentity() == 1) {
+            if (!userExaminationPaper.getCreateId().equals(currentUserId)) {
+                return R.error("权限不够");
+            }
+        }
+        userExaminationPaperService.removeById(id);
+        return R.error("删除成功");
+
+    }
+
+
+    @PostMapping("submit_test")
+    @ApiOperation(value = "提交答案", notes = "参数示例： {\n" +
+            "\t\"id\": 1,  \n" +
+            "\t\"testQuestionsDtoList\": [\n" +
+            "\t\t{\n" +
+            "\t\t\t\"answer\": \"B\",\n" +
+            "\t\t\t\"id\": 1,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"D\",\n" +
+            "\t\t\t\"id\": 2,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"D\",\n" +
+            "\t\t\t\"id\": 3,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"A\",\n" +
+            "\t\t\t\"id\": 4,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"B\",\n" +
+            "\t\t\t\"id\": 5,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"B\",\n" +
+            "\t\t\t\"id\": 6,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"A\",\n" +
+            "\t\t\t\"id\": 7,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"A\",\n" +
+            "\t\t\t\"id\": 8,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"C\",\n" +
+            "\t\t\t\"id\": 9,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"C\",\n" +
+            "\t\t\t\"id\": 10,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"B\",\n" +
+            "\t\t\t\"id\": 11,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\": \"B\",\n" +
+            "\t\t\t\"id\": 12,\n" +
+            "\t\t\t\"testQuestionsType\": 0\n" +
+            "\t\t},\n" +
+            "               {\n" +
+            "\t\t\t\"answer\":\"[root@zookeeper1 bin]# .zkServer.sh statusZooKeeper JMX enabled by defaultUsing config: rootzookeeper-3.4.14bin..confzoo.cfgMode: follower[root@zookeeper2 bin]# .zkServer.sh statusZooKeeper JMX enabled by defaultUsing config: rootzookeeper-3.4.14bin..confzoo.cfgMode: leader[root@zookeeper3 bin]# .zkServer.sh statusZooKeeper JMX enabled by defaultUsing config: rootzookeeper-3.4.14bin..confzoo.cfgMode: follower\",\n" +
+            "\t\t\t\"id\": 47,\n" +
+            "\t\t\t\"testQuestionsType\": 2\n" +
+            "\t\t}\n" +
+            "\t],\n" +
+            "\t\"userExaminationPaperId\": 1588377490409127938\n" +
+            "}")
+    public R<StudentScore> submitTest(@RequestBody ExaminationPaperVo examinationPaperVo, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
+        UserExaminationPaper userExaminationPaper = userExaminationPaperService.getById(examinationPaperVo.getUserExaminationPaperId());
+        ExaminationPaper examinationPaper = examinationPaperService.getById(examinationPaperVo.getId());
+        if (userExaminationPaper == null || examinationPaper == null) {
+            return R.error("参数不合法");
+        }
+        if (userExaminationPaper.getExaminationStart() != 0){
+            return R.error("考试未开始，或者已结束");
+        }
+        if (!userExaminationPaper.getUserId().equals(currentUserId)) {
+            return R.error("权限不够");
+        }
+        List<TestQuestionsDto> testQuestionsDtoList = examinationPaperVo.getTestQuestionsDtoList();
+        if (!VerifyTestQuestionsDto.verifyTestQuestions(testQuestionsDtoList)) {
+            return R.error("参数不合法");
+        }
+        Double score = testQuestionsService.giveAMark(testQuestionsDtoList);
+        if (score == null) {
+            return R.error("参数不合法");
+        }
+        LocalDateTime endTime = userExaminationPaper.getEndTime();
+        if (DateUtils.isTimeout(endTime)) {
+            return R.error("提交超时");
+        }
+        // 返回成绩对象
+        StudentScore studentScore = new StudentScore();
+        studentScore.setScore(score);
+        studentScore.setUserExaminationPaperId(userExaminationPaper.getId());
+        studentScore.setExaminationPaperId(examinationPaperVo.getId());
+        studentScore.setStudentId(currentUserId);
+        studentScoreService.save(studentScore);
+        // 设置考试对象的状态
+        userExaminationPaper.setExaminationStart(2);
+        userExaminationPaperService.saveOrUpdate(userExaminationPaper);
+
+
+        return R.success(studentScore);
+    }
 
 }

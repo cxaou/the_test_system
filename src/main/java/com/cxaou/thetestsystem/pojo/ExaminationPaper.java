@@ -23,7 +23,7 @@ public class ExaminationPaper implements Serializable {
     /**
      * 主键
      */
-    @ApiModelProperty(value = "id",example = "1001")
+    @ApiModelProperty(value = "试卷id",example = "1001")
     @TableId
     private Long id;
 

@@ -3,7 +3,6 @@ package com.cxaou.thetestsystem.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,6 +27,9 @@ public class UserExaminationPaperVo implements Serializable {
 
     @ApiModelProperty("批量添加的用户")
     private List<Long> UserIds;
+
+    @ApiModelProperty("考试id")
+    private Long id;
 
     @ApiModelProperty(hidden = true)
     private static final long serialVersionUID = 1L;

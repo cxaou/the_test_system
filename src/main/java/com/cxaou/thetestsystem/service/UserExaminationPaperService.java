@@ -17,9 +17,10 @@ public interface UserExaminationPaperService extends IService<UserExaminationPap
      * 添加考试
      * @param userExaminationPaperVo 要操作的考试vo对象
      * @param userIds 当前登录用户的id
+     * @param currentUserId
      * @return 成功 ? true:false
      */
-    boolean addUserExaminationPaper(UserExaminationPaperVo userExaminationPaperVo, List<Long> userIds);
+    boolean addUserExaminationPaper(UserExaminationPaperVo userExaminationPaperVo, List<Long> userIds,Long currentUserId);
 
     /**
      *

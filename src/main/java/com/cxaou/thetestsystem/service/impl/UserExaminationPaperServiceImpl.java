@@ -46,10 +46,11 @@ public class UserExaminationPaperServiceImpl extends ServiceImpl<UserExamination
      *
      * @param userExaminationPaperVo 要操作的考试vo对象
      * @param userIds                当前登录用户的id
+     * @param currentUserId
      * @return
      */
     @Override
-    public boolean addUserExaminationPaper(UserExaminationPaperVo userExaminationPaperVo, List<Long> userIds) {
+    public boolean addUserExaminationPaper(UserExaminationPaperVo userExaminationPaperVo, List<Long> userIds, Long currentUserId) {
 
         //查看传过来的试卷是否存在
         ExaminationPaper examinationPaper = examinationPaperService.getById(userExaminationPaperVo.getExaminationPaperId());
@@ -63,6 +64,14 @@ public class UserExaminationPaperServiceImpl extends ServiceImpl<UserExamination
         userExaminationPaper.setStartTime(startTime);
         userExaminationPaper.setExamintionPaperId(examinationPaper.getId());
         userExaminationPaper.setExaminationStart(1);
+        // 公共字段
+        if (userExaminationPaperVo.getId() == null){
+            userExaminationPaper.setCreateTime(LocalDateTime.now());
+            userExaminationPaper.setCreateId(currentUserId);
+        }
+        userExaminationPaper.setUpdateTime(LocalDateTime.now());
+        userExaminationPaper.setUpdateId(currentUserId);
+
         LocalTime duration = examinationPaper.getDuration();
         // 结合试卷表判断考试结束时间
         LocalDateTime endTime = DateUtils.calculateEndDateTime(startTime, duration);
@@ -74,9 +83,12 @@ public class UserExaminationPaperServiceImpl extends ServiceImpl<UserExamination
                     UserExaminationPaper temp = new UserExaminationPaper();
                     BeanUtils.copyProperties(userExaminationPaper, temp);
                     temp.setUserId(userId);
+                    if (userExaminationPaperVo.getId() != null){
+                        temp.setId(userExaminationPaperVo.getId());
+                    }
                     return temp;
                 }).collect(Collectors.toList());
-        this.saveBatch(userExaminationPaperList);
+        this.saveOrUpdateBatch(userExaminationPaperList);
         return true;
     }
 
@@ -100,12 +112,12 @@ public class UserExaminationPaperServiceImpl extends ServiceImpl<UserExamination
         List<ExaminationInfoDto> examinationInfoDtoList = records.stream().map(userExaminationPaper -> {
 
             if (userExaminationPaper.getExaminationStart() != 2) {
-                if (DateUtils.is_stare(userExaminationPaper.getStartTime())) {
+                if (DateUtils.isStare(userExaminationPaper.getStartTime())) {
                     userExaminationPaper.setExaminationStart(0);
                 } else {
                     userExaminationPaper.setExaminationStart(1);
                 }
-                if (DateUtils.is_stare(userExaminationPaper.getEndTime())) {
+                if (DateUtils.isStare(userExaminationPaper.getEndTime())) {
                     userExaminationPaper.setExaminationStart(2);
                 }
                 // 更新数据库

@@ -64,6 +64,27 @@ public class UserExaminationPaper implements Serializable {
     @ApiModelProperty(" 是否开始考试 0 开始 1 未开始 2 结束")
     private Integer examinationStart;
 
+
+    /**
+     * 发布人的id
+     */
+    private Long createId;
+
+    /**
+     * 修改人的id
+     */
+    private Long updateId;
+
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
+
+    /**
+     * 发布时间
+     */
+    private LocalDateTime createTime;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

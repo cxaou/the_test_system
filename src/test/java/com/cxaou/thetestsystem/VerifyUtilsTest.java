@@ -8,8 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @SpringBootTest
 public class VerifyUtilsTest {
@@ -38,7 +39,7 @@ public class VerifyUtilsTest {
     void is_stareTest(){
         LocalDateTime localDateTime = LocalDateTime.of(2022,11,3,8,25);
         System.out.println("VerifyUserExaminationPaperVoUtils.is_stare(localDateTime) = " +
-               DateUtils.is_stare(localDateTime));
+               DateUtils.isStare(localDateTime));
     }
 
     @Test
@@ -64,5 +65,23 @@ public class VerifyUtilsTest {
         System.out.println("date = " + date);
         LocalDateTime localDateTime = DateUtils.dateToLocalDateTime(date);
         System.out.println("localDateTime = " + localDateTime);
+    }
+
+    @Test
+    void dateIsTimeOut(){
+        LocalDateTime localDateTime = LocalDateTime.of(2022,11,4,19,55);
+        boolean timeout = DateUtils.isTimeout(localDateTime);
+        System.out.println("timeout = " + timeout);
+    }
+
+    @Test
+    void testSet(){
+        Set<Long> set = new HashSet<>();
+        boolean add = set.add(10L);
+        boolean add1 = set.add(10L);
+        boolean add2 = set.add(11L);
+        System.out.println("add = " + add);
+        System.out.println("add = " + add1);
+        System.out.println("add = " + add2);
     }
 }

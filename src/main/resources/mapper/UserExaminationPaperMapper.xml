@@ -12,11 +12,15 @@
             <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
             <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
             <result property="examinationStart" column="examination_start" jdbcType="INTEGER"/>
+            <result property="createId" column="create_id" jdbcType="BIGINT"/>
+            <result property="updateId" column="update_id" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,examintion_paper_id,user_id,
         examination_time,start_time,end_time,
-        s_start
+        s_start,create_id,update_id,update_time,create_time
     </sql>
 </mapper>

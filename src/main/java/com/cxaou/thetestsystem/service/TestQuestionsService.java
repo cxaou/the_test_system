@@ -1,8 +1,11 @@
 package com.cxaou.thetestsystem.service;
 
+import com.cxaou.thetestsystem.dto.TestQuestionsDto;
 import com.cxaou.thetestsystem.pojo.TestQuestions;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cxaou.thetestsystem.vo.ExaminationPaperVo;
+
+import java.util.List;
 
 /**
  *
@@ -15,4 +18,11 @@ public interface TestQuestionsService extends IService<TestQuestions> {
      * @return 试题的Dto
      */
     ExaminationPaperVo getTopic(Long examinationPaperId);
+
+    /**
+     *  根据提交上来的dto 对象判分
+     * @param testQuestionsDto
+     * @return
+     */
+    Double giveAMark(List<TestQuestionsDto> testQuestionsDto);
 }

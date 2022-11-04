@@ -16,8 +16,11 @@ import java.util.List;
 @ToString(callSuper = true)
 public class ExaminationPaperVo extends ExaminationPaper{
 
-    @ApiModelProperty(value = "分数",required = true)
+    @ApiModelProperty(value = "试题",required = true)
     private List<TestQuestionsDto> testQuestionsDtoList;
+
+    @ApiModelProperty(value = "考试的id")
+    private Long userExaminationPaperId;
 
 
 

@@ -1,27 +1,25 @@
 package com.cxaou.thetestsystem.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cxaou.thetestsystem.dto.ExaminationInfoDto;
 import com.cxaou.thetestsystem.mapper.TeacherStudentMapper;
 import com.cxaou.thetestsystem.pojo.ExaminationPaper;
-import com.cxaou.thetestsystem.pojo.User;
 import com.cxaou.thetestsystem.pojo.UserExaminationPaper;
 import com.cxaou.thetestsystem.service.ExaminationPaperService;
-import com.cxaou.thetestsystem.service.TeacherStudentService;
 import com.cxaou.thetestsystem.service.UserExaminationPaperService;
 import com.cxaou.thetestsystem.mapper.UserExaminationPaperMapper;
 import com.cxaou.thetestsystem.service.UserService;
 import com.cxaou.thetestsystem.utils.DateUtils;
-import com.cxaou.thetestsystem.utils.VerifyUserExaminationPaperVoUtils;
 import com.cxaou.thetestsystem.vo.UserExaminationPaperVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +78,50 @@ public class UserExaminationPaperServiceImpl extends ServiceImpl<UserExamination
                 }).collect(Collectors.toList());
         this.saveBatch(userExaminationPaperList);
         return true;
+    }
+
+
+    /**
+     * @param pageInfo 分页对象
+     * @param userId   用户id
+     * @param examinationStart
+     * @return
+     */
+    @Override
+    public Page<ExaminationInfoDto> getUserExaminationPaper(Page<UserExaminationPaper> pageInfo,
+                                                            Long userId, Integer examinationStart) {
+        LambdaQueryWrapper<UserExaminationPaper> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserExaminationPaper::getUserId, userId)
+                    .eq(examinationStart != null, UserExaminationPaper::getExaminationStart,examinationStart);
+        this.page(pageInfo, queryWrapper);
+        Page<ExaminationInfoDto> infoDtoPage = new Page<>();
+        BeanUtils.copyProperties(pageInfo, infoDtoPage, "records");
+        List<UserExaminationPaper> records = pageInfo.getRecords();
+        List<ExaminationInfoDto> examinationInfoDtoList = records.stream().map(userExaminationPaper -> {
+
+            if (userExaminationPaper.getExaminationStart() != 2) {
+                if (DateUtils.is_stare(userExaminationPaper.getStartTime())) {
+                    userExaminationPaper.setExaminationStart(0);
+                } else {
+                    userExaminationPaper.setExaminationStart(1);
+                }
+                if (DateUtils.is_stare(userExaminationPaper.getEndTime())) {
+                    userExaminationPaper.setExaminationStart(2);
+                }
+                // 更新数据库
+                this.saveOrUpdate(userExaminationPaper);
+            }
+
+            // 查询试卷信息
+            ExaminationInfoDto examinationInfoDto = new ExaminationInfoDto();
+            BeanUtils.copyProperties(userExaminationPaper, examinationInfoDto);
+            ExaminationPaper examination =
+                    examinationPaperService.getById(userExaminationPaper.getExamintionPaperId());
+            examinationInfoDto.setExaminationPaper(examination);
+            return examinationInfoDto;
+        }).collect(Collectors.toList());
+        infoDtoPage.setRecords(examinationInfoDtoList);
+        return infoDtoPage;
     }
 
 

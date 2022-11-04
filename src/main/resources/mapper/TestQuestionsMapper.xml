@@ -19,8 +19,11 @@
 
     <sql id="Base_Column_List">
         id,examination_paper_id,test_questions_type,
-        data,options,answer,
+        data,options,
         score,min_similarity,max_similarity,
         is_delete
     </sql>
+    <select id="getAllByExaminationPaperId" resultType="com.cxaou.thetestsystem.pojo.TestQuestions">
+        SELECT <include refid="Base_Column_List"/> FROM test_questions WHERE is_delete = 0 and examination_paper_id = #{examinationId}
+    </select>
 </mapper>

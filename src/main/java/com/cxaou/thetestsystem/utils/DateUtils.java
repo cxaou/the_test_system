@@ -8,7 +8,7 @@ public class DateUtils {
     /**
      *  传入时间，比较是否开始考试
      * @param startTime 开始考试的时间
-     * @return
+     * @return 开始 true ， 否则 false
      */
     public static boolean is_stare(LocalDateTime startTime){
         Duration duration = Duration.between(LocalDateTime.now(),startTime);
@@ -17,6 +17,12 @@ public class DateUtils {
         return duration.toMillis() <= 0;
     }
 
+    /**
+     * 时间加法，  LocalDateTime + LocalTime
+     * @param dateTime
+     * @param time
+     * @return
+     */
     public static LocalDateTime calculateEndDateTime(LocalDateTime dateTime, LocalTime time){
         int hour = time.getHour();
         int minute = time.getMinute();
@@ -24,6 +30,11 @@ public class DateUtils {
         return dateTime.plusHours(hour).plusMinutes(minute).plusSeconds(second);
     }
 
+    /**
+     * 时间类型转换 Date  转换成 LocalDateTime
+     * @param date
+     * @return
+     */
     public static LocalDateTime dateToLocalDateTime(Date date){
         Instant instant = date.toInstant();
         ZoneId zoneId = ZoneId.systemDefault();

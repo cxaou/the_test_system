@@ -59,9 +59,9 @@ public class UserExaminationPaper implements Serializable {
     private LocalDateTime endTime;
 
     /**
-     * 是否开始考试 0 开始 1 未开始
+     * 是否开始考试 0 开始 1 未开始 2 结束
      */
-    @ApiModelProperty(" 是否开始考试 0 开始 1 未开始")
+    @ApiModelProperty(" 是否开始考试 0 开始 1 未开始 2 结束")
     private Integer examinationStart;
 
     @TableField(exist = false)

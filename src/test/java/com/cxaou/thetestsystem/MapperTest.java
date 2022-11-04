@@ -3,10 +3,8 @@ package com.cxaou.thetestsystem;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cxaou.thetestsystem.mapper.AfficheMapper;
 import com.cxaou.thetestsystem.mapper.TeacherStudentMapper;
-import com.cxaou.thetestsystem.pojo.Affiche;
-import com.cxaou.thetestsystem.pojo.Student;
-import com.cxaou.thetestsystem.pojo.Teacher;
-import com.cxaou.thetestsystem.pojo.User;
+import com.cxaou.thetestsystem.mapper.TestQuestionsMapper;
+import com.cxaou.thetestsystem.pojo.*;
 import com.cxaou.thetestsystem.service.StudentService;
 import com.cxaou.thetestsystem.service.TeacherService;
 import com.cxaou.thetestsystem.service.UserService;
@@ -35,6 +33,9 @@ public class MapperTest {
 
     @Autowired
     private AfficheMapper  afficheMapper;
+
+    @Autowired
+    private TestQuestionsMapper testQuestionsMapper;
 
     @Test
     void searchStudentIdByThacherIdTest(){
@@ -84,4 +85,12 @@ public class MapperTest {
         List<Affiche> neWTeacherAffiche = afficheMapper.getNeWTeacherAffiche(Collections.singletonList(0L),0);
         neWTeacherAffiche.forEach(System.out::println);
     }
+
+
+    @Test
+    void  getAllByExaminationPaperIdTest(){
+       List<TestQuestions> allByExaminationPaperId = testQuestionsMapper.getAllByExaminationPaperId(1L);
+       allByExaminationPaperId.forEach(System.out::println);
+    }
+
 }

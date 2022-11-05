@@ -131,7 +131,7 @@ public class ExaminationPaperController {
 
     @GetMapping("/all")
     @ApiOperation(value = "获取所有的试卷列表")
-    public R<Page<ExaminationPaper>> getAllExaminationPaper(Integer page, Integer pageSize, String title, HttpServletRequest request) {
+    public R<Page<ExaminationPaper>> getAllExaminationPaper(int page, int pageSize, String title, HttpServletRequest request) {
         Page<ExaminationPaper> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<ExaminationPaper> examinationPaperLambdaQueryWrapper = new LambdaQueryWrapper<>();
         examinationPaperLambdaQueryWrapper.like(title != null, ExaminationPaper::getTitle, title);
@@ -142,7 +142,7 @@ public class ExaminationPaperController {
 
     @GetMapping("/own_all")
     @ApiOperation("获取到自己发布的所有试卷列表")
-    public R<Page<ExaminationPaper>> getOwnAllExaminationPaper(Integer page, Integer pageSize, String title, HttpServletRequest request) {
+    public R<Page<ExaminationPaper>> getOwnAllExaminationPaper(int page, int pageSize, String title, HttpServletRequest request) {
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
         Page<ExaminationPaper> pageInfo = new Page<>(page, pageSize);

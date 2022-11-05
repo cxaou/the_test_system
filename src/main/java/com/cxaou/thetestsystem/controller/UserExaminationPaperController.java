@@ -133,7 +133,7 @@ public class UserExaminationPaperController {
     @ApiOperation(value = "查看我的考试", notes = "查询用户要参加考试的试卷 创建DTO要能看到试卷的详细信息\n" +
             "examinationStart  条件筛选， 0 开始的考试 1 未开始的考试 2 结束的考试 ")
     public R<Page<ExaminationInfoDto>> getUserExaminationPaper(HttpServletRequest request,
-                                                               Integer page, Integer pageSize, Integer examinationStar) {
+                                                               int page, int pageSize, int examinationStar) {
         // 查看考试功能
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);
@@ -148,7 +148,7 @@ public class UserExaminationPaperController {
     @ApiOperation(value = "根据id查询学生的考试信息", notes = "教师跟admin有权限\n" +
             "examinationStart  条件筛选， 0 开始的考试 1 未开始的考试 2 结束的考试 ")
     public R<Page<ExaminationInfoDto>> getUserExaminationPaperById(HttpServletRequest request, Long userId,
-                                                                   Integer page, Integer pageSize, Integer examinationStart) {
+                                                                   int page, int pageSize, int examinationStart) {
         // 查看考试功能
         String token = request.getHeader("token");
         Long currentUserId = (Long) redisTemplate.opsForValue().get(token);

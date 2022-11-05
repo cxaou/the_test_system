@@ -72,8 +72,8 @@ public class AfficheController {
 
     @ApiImplicitParams(
             {
-                    @ApiImplicitParam(name = "page", value = "页码", required = true),
-                    @ApiImplicitParam(name = "pageSize", value = "每页的条数", required = true),
+                    @ApiImplicitParam(name = "page", value = "页码", required = true,dataType = "Long"),
+                    @ApiImplicitParam(name = "pageSize", value = "每页的条数", required = true,dataType = "Long"),
                     @ApiImplicitParam(name = "name", value = "搜索框，模糊查询")
             }
     )
@@ -92,8 +92,8 @@ public class AfficheController {
 
     @ApiImplicitParams(
             {
-                    @ApiImplicitParam(name = "page", value = "页码", required = true),
-                    @ApiImplicitParam(name = "pageSize", value = "每页的条数", required = true),
+                    @ApiImplicitParam(name = "page", value = "页码", required = true,dataType = "Long"),
+                    @ApiImplicitParam(name = "pageSize", value = "每页的条数", required = true,dataType = "Long"),
                     @ApiImplicitParam(name = "name", value = "搜索框，模糊查询")
             }
     )

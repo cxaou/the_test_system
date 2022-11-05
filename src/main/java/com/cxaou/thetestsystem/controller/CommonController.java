@@ -36,7 +36,7 @@ public class CommonController {
             @ApiImplicitParam(name = "file", value = "要上传的文件", required = true)
 
     })
-    @ApiParam("文件上传用的接口")
+    @ApiOperation("文件上传用的接口")
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file) throws IOException {
 
@@ -58,7 +58,7 @@ public class CommonController {
             @ApiImplicitParam(name = "name", value = "要下载的文件名", required = true)
 
     })
-    @ApiParam("文件下载用的接口")
+    @ApiOperation("文件下载用的接口")
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response) {
         FileInputStream fileInputStream = null;

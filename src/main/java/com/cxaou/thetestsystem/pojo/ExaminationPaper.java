@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -37,7 +38,7 @@ public class ExaminationPaper implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(value = "试卷的创建时间")
-    private LocalDate createTime;
+    private LocalDateTime createTime;
 
     /**
      * 创建人 
@@ -49,7 +50,7 @@ public class ExaminationPaper implements Serializable {
      * 修改时间
      */
     @ApiModelProperty(value = "试卷的修改时间")
-    private LocalDate updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 修改人

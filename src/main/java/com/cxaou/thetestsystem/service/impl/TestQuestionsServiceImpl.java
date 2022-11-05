@@ -13,8 +13,10 @@ import com.cxaou.thetestsystem.vo.ExaminationPaperVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
+@Transactional
 @Service
 public class TestQuestionsServiceImpl extends ServiceImpl<TestQuestionsMapper, TestQuestions>
     implements TestQuestionsService{
@@ -111,6 +114,18 @@ public class TestQuestionsServiceImpl extends ServiceImpl<TestQuestionsMapper, T
         score = Double.parseDouble(format);
 
         return score;
+    }
+
+    @Override
+    public void updateTestQuestionService(TestQuestionsDto testQuestionsDto, Double oldScore) {
+        TestQuestions testQuestions = new TestQuestions();
+        BeanUtils.copyProperties(testQuestionsDto,testQuestions);
+        String options = JSON.toJSONString(testQuestionsDto.getOptionsMap());
+        testQuestions.setOptions(options);
+        // 更新试题表
+        this.saveOrUpdate(testQuestions);
+        // 更新试卷表
+       examinationPaperService.updateScore(testQuestionsDto.getExaminationPaperId(),oldScore,testQuestionsDto.getScore());
     }
 }
 

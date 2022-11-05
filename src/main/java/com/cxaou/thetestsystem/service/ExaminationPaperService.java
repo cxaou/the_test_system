@@ -46,4 +46,12 @@ public interface ExaminationPaperService extends IService<ExaminationPaper> {
      */
     boolean getOwnAllExaminationPaper(Page<ExaminationPaper> pageInfo, String title,Long currentUserId);
 
+    /**
+     * 更新分数
+     * @param id 试卷表的id
+     * @param oldScore 试题旧的分数
+     * @param neWScore 试题新的分数
+     */
+    void updateScore(Long id , Double oldScore, Double neWScore);
+
 }

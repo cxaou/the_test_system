@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,8 +54,8 @@ public class ExaminationPaperServiceImpl extends ServiceImpl<ExaminationPaperMap
         // 设置字段
         examinationPaper.setCreateName(currentUserId);
         examinationPaper.setUpdateName(currentUserId);
-        examinationPaper.setUpdateTime(LocalDate.now());
-        examinationPaper.setCreateTime(LocalDate.now());
+        examinationPaper.setUpdateTime(LocalDateTime.now());
+        examinationPaper.setCreateTime(LocalDateTime.now());
         // 保存
         this.save(examinationPaper);
         // 保存试题表对象
@@ -83,7 +84,7 @@ public class ExaminationPaperServiceImpl extends ServiceImpl<ExaminationPaperMap
         if (!verifyCurrentUser(currentUserId, examinationPaperSQL)) {
             return false;
         }
-        examinationPaper.setUpdateTime(LocalDate.now());
+        examinationPaper.setUpdateTime(LocalDateTime.now());
         examinationPaper.setUpdateName(currentUserId);
         return this.saveOrUpdate(examinationPaper);
     }
@@ -124,6 +125,22 @@ public class ExaminationPaperServiceImpl extends ServiceImpl<ExaminationPaperMap
                 .eq(ExaminationPaper::getCreateName, currentUserId);
         this.page(pageInfo, queryWrapper);
         return true;
+    }
+
+    /**
+     *
+     * @param id 试卷表的id
+     * @param oldScore 试题旧的分数
+     * @param neWScore 试题新的分数
+     */
+    @Override
+    public void updateScore(Long id , Double oldScore, Double neWScore) {
+        ExaminationPaper examinationPaperServiceById =
+               this.getById(id);
+        Double testScores = examinationPaperServiceById.getTestScores();
+        examinationPaperServiceById.setTestScores(testScores - (oldScore - neWScore));
+        examinationPaperServiceById.setUpdateTime(LocalDateTime.now());
+        this.saveOrUpdate(examinationPaperServiceById);
     }
 
     /**

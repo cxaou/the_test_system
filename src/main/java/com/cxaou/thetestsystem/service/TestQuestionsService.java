@@ -25,4 +25,12 @@ public interface TestQuestionsService extends IService<TestQuestions> {
      * @return
      */
     Double giveAMark(List<TestQuestionsDto> testQuestionsDto);
+
+    /**
+     *  更新试题信息
+     *
+     * @param testQuestionsDto  试题
+     * @param oldScore 旧的分数
+     */
+    void updateTestQuestionService(TestQuestionsDto testQuestionsDto,Double oldScore);
 }

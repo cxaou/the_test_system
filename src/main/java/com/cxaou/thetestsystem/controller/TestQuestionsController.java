@@ -101,7 +101,7 @@ public class TestQuestionsController {
 
 
 
-    //TODO 删除试题
+
     @DeleteMapping()
     @ApiOperation("删除试题")
     @ApiImplicitParam(name = "id",value = "试题的id",dataType = "Long")

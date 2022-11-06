@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/admin")
 @Slf4j
 @Api(tags = "管理员操作的接口")
-@CrossOrigin(origins = "*")
 public class AdminController {
 
     @Autowired

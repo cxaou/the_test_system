@@ -14,14 +14,14 @@ http://localhost:8080/doc.html  查看接口，前端页面后续会慢慢开发
 
 ### 2. 配置
 
-如果想要用腾讯的短信服务只需要修改如下配置文件即可
+#### 1. 如果想要用腾讯的短信服务只需要修改如下配置文件即可
 
 ```yaml
 SSM: # 配置是否开启短信验证，默认false ，不开启会在控制台输出
   StartSSM: false
 ```
 
-如果需要使用用腾讯的短信验证码服务，需要自行配置一个配置文件  
+#### 2. 如果需要使用用腾讯的短信验证码服务，需要自行配置一个配置文件  
 
 ```properties
 # 腾讯云账户 secrtId，secretKey
@@ -37,7 +37,7 @@ tencent.sms.templateId=
 
 ```
 
- 上传的配置文件中没有配置redis跟mysql的配置，需要自行配置
+#### 3. 上传的配置文件中没有配置redis跟mysql的配置，需要自行配置
 
 ```yaml
 spring:
@@ -57,5 +57,14 @@ spring:
     active: dev
 
 
+```
+
+#### 4. swagger在生产过程中不希望开启可以修改配置文件
+
+默认值是false
+
+```yaml
+swagger:
+  enable: true # 是否开启swagger
 ```
 

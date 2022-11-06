@@ -68,28 +68,30 @@ swagger:
   enable: true # 是否开启swagger
 ```
 
+#### 5. docker映射配置文件
+
+在jar包的同级目录下建立一个config目录，在config目录下创建一个application.yaml 目录，在该文件中可以修改配置
+
 ### 3. 运行
 
 编写DockerFile文件
 
 ```dockerfile
-# Docker image for springboot file run
-# VERSION 0.0.1
-# Author: eangulee
-# 基础镜像使用java
-FROM openjdk:8
-# 作者
-MAINTAINER cxaou <2576353248@qq.com>
-# VOLUME 指定了临时文件目录为/tmp。
-# 其效果是在主机 /var/lib/docker 目录下创建了一个临时文件，并链接到容器的/tmp
-VOLUME /tmp 
-# 将jar包添加到容器中并更名为the_test_system.jar
-ADD  the_test_system-0.0.1-SNAPSHOT.jar  /the_test_system.jar 
-# 运行jar包
-RUN bash -c 'touch /the_test_system.jar'
-ENV TZ 'Asia/Shanghai'p
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/the_test_system.jar"]
+FROM  openjdk:8
+# author 作者
+MAINTAINER cxaou
+
+# 挂载目录，宿主机目录，我这里是jar包目录
+VOLUME /project/the_test_system
+# 指定路径，docker容器里jar包的目录
+WORKDIR /project/the_test_system
+
+# 添加jar到镜像并命名为the_test_system.jar
+ADD the_test_system-0.0.1-SNAPSHOT.jar  the_test_system.jar
+#在docker容器里创建和宿主机同样的配置文件的目录, jar包要和config目录同级
+CMD mkdir /project/the_test_system/config
+# 启动服务
+ENTRYPOINT ["java","-jar","the_test_system.jar"]
 
 ```
 
@@ -102,6 +104,6 @@ docker build -t the_test_system:v1 .
 运行
 
 ```shell
-docker run --name   the_test_system -d  -p 8080:8080 the_test_system:v1 
+docker run -d -p 8080:8080 -v /project/the_test_system/config:/project/the_test_system/config --name the_test_system the_test_system:v1
 ```
 

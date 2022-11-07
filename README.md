@@ -107,3 +107,6 @@ docker build -t the_test_system:v1 .
 docker run -d -p 8080:8080 -v /project/the_test_system/config:/project/the_test_system/config --name the_test_system the_test_system:v1
 ```
 
+### 4. 测试
+
+在修改详细的信息模块时，身份证的校验比较严格，要想成功通过测试，可以运行  Test目录下的 **com.cxaou.thetestsystem.IdCardGeneratorTest** 中的  createIdCardGeneratorTest() 方法生成的身份证进行测试

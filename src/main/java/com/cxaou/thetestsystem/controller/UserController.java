@@ -51,7 +51,7 @@ public class UserController {
 
 
         String phone = null;
-        if (type == 0) {
+        if (type == 0) { // 手机号登录
             if (!StringUtils.hasText(code)) {
                 return R.error("验证码为空");
             }
@@ -70,22 +70,27 @@ public class UserController {
 
         }
 
-        if (!StringUtils.hasText(user.getPassword())) {
-            return R.error("密码为空");
-        }
-
         User userOne = userService.login(user);
         if (userOne == null) {
             return R.error("账号不存在");
         }
+
         // 判断账号状态
         if (userOne.getUserState() == 1) {
             return R.error("该账号已经被禁用了");
         }
-        String password = MD5Util.getMD5Str(user.getPassword());
-        if (!password.equals(userOne.getPassword())) {
-            return R.error("账号或密码错误");
+
+        if(type == 1){
+            if (!StringUtils.hasText(user.getPassword())) {
+                return R.error("密码为空");
+            }
+
+            String password = MD5Util.getMD5Str(user.getPassword());
+            if (!password.equals(userOne.getPassword())) {
+                return R.error("账号或密码错误");
+            }
         }
+
         //把查询出来的密码置空
         userOne.setPassword("");
         String token = TokenUtil.sign(userOne.getId());

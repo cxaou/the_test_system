@@ -19,43 +19,24 @@ SSM: # 配置是否开启短信验证，默认false ，不开启会在控制台�
   StartSSM: false
 children:
   common-children:
-    - id: 1
+    - id: 39
+      name: 试卷管理
+      icon: icon-monishijuan
       type: 1
-      name: 公共列表
-      url: "/main/stu"
+      url: /main/testPaper
       children:
-        - children:
-            id: 12
-            parentId: 2
-            type: 3
-            name: 三级
-            url: "aa"
-        - children:
-            id: 13
-            parentId: 2
-            type: 3
-            name: 三级
-            url: "bb"
-          id: 11
-          parentId: 1
+        - children: "null"
+          id: 40
+          name: 试卷列表
+          parentId: 39
           type: 2
-          name: 查看所有学生
-          url: "/main/stu/stuList"
-    - id: 2
-      type: 1
-      name: "试卷管理"
-      url: "/main/paper"
-      children:
-        - children: "null"
-          id: 21
-          parentId: 2
-          name: 添加试卷
-          url: "/main/paper/addPaper"
-        - children: "null"
-          id: 22
-          parentId: 2
-          name: 查看所有试卷
-          url: /main/paper/showPaper
+          url: /main/testPaper/testList
+        - children: null
+          id: 41
+          name: 已过期的试卷列表
+          parentId: 39
+          type: 2
+          url: /main/testPaper/overdueList
   admin-children:
     - id: 3
       type: 1
@@ -69,24 +50,62 @@ children:
           name: 查看所有用户
           url: "/main/stu/stuList"
   student-children:
-    - id: 3
+    - id: 38
+      type: 2
+      name: 系统首页
+      url: /main/dashboard
+      icon: icon-shouyetianchong
+    - id: 42
+      name: 考生信息管管理
+      icon: icon-fasongxinxi
       type: 1
-      name: 学生列表
-      url: "/main/stu"
+      url: /main/testinfo
       children:
-        - children: "null"
-          id: 11
-          parentId: 1
+        - children: null
+          id: 43
+          name: 查看个人信息
+          parentId: 42
           type: 2
-          name: 查看所有用户
-          url: "/main/stu/stuList"
+          url: /main/testinfo/showInfo
+        - children: null
+          id: 44
+          name: 查看个人考试成绩
+          parentId: 42
+          type: 2
+          url: /main/testinfo/showIch
+        - children: null
+          id: 45
+          name: 修改个人信息
+          parentId: 42
+          type: 2
+          url: /main/testinfo/setUserInfo
+    - id: 46
+      name: 随便聊聊
+      icon: icon-elfstorychris
+      type: 1
+      url: /main/story
+      children:
+        - children: null
+          id: 47
+          name: 你的故事
+          parentId: 46
+          type: 2
+          url: /main/story/chat
+        - children: null
+          id: 48
+          name: 故事列表
+          parentId: 46
+          type: 2
+          url: /main/story/storyList
   teacher-children:
     - id: 3
       type: 1
       name: 教师列表
       url: "/main/stu"
       children:
-        - children: "null"
+        - children:
+            id: 1
+            name: aa
           id: 11
           parentId: 1
           type: 2

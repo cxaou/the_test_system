@@ -23,8 +23,7 @@ public class ChildrenController {
 
     @GetMapping("/{identity}")
     public List<ChildrenDto> getChildren(@PathVariable("identity") Integer identity) {
-        List<ChildrenDto> commonChildren = children.getCommonChildren();
-        List<ChildrenDto> childrenDtoList = new ArrayList<>();
+        List<ChildrenDto> childrenDtoList = null;
         if (identity == 0) { //身份 0 admin 1 教师 2 学生
             childrenDtoList = children.getAdminChildren();
         } else if (identity == 1) {
@@ -34,7 +33,6 @@ public class ChildrenController {
         } else {
             return null;
         }
-        childrenDtoList.addAll(commonChildren);
         return childrenDtoList;
     }
 }

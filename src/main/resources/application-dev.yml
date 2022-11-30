@@ -17,3 +17,78 @@ reggie:
   path: F:\temp
 SSM: # 配置是否开启短信验证，默认false ，不开启会在控制台输出
   StartSSM: false
+children:
+  common-children:
+    - id: 1
+      type: 1
+      name: 公共列表
+      url: "/main/stu"
+      children:
+        - children:
+            id: 12
+            parentId: 2
+            type: 3
+            name: 三级
+            url: "aa"
+        - children:
+            id: 13
+            parentId: 2
+            type: 3
+            name: 三级
+            url: "bb"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有学生
+          url: "/main/stu/stuList"
+    - id: 2
+      type: 1
+      name: "试卷管理"
+      url: "/main/paper"
+      children:
+        - children: "null"
+          id: 21
+          parentId: 2
+          name: 添加试卷
+          url: "/main/paper/addPaper"
+        - children: "null"
+          id: 22
+          parentId: 2
+          name: 查看所有试卷
+          url: /main/paper/showPaper
+  admin-children:
+    - id: 3
+      type: 1
+      name: admin列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"
+  student-children:
+    - id: 3
+      type: 1
+      name: 学生列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"
+  teacher-children:
+    - id: 3
+      type: 1
+      name: 教师列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"

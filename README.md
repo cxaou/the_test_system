@@ -68,7 +68,85 @@ swagger:
   enable: true # 是否开启swagger
 ```
 
-#### 5. docker映射配置文件
+#### 5. 整合前端的动态路由
+
+实现功能，不同身份的用户，看到的用户界面不一样
+
+-  common-children:  公共的模块，把教师，学生，admin 的公共模块抽取出来，避免重复配置，造成数据冗余
+- admin-children： 教师模块
+-  student-children： 学生模块
+- teacher-children： 教师模块
+
+```yaml
+children:
+  common-children: 
+    - id: 1
+      type: 1
+      name: 公共列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有学生
+          url: "/main/stu/stuList"
+    - id: 2
+      type: 1
+      name: "试卷管理"
+      url: "/main/paper"
+      children:
+        - children: "null"
+          id: 21
+          parentId: 2
+          name: 添加试卷
+          url: "/main/paper/addPaper"
+        - children: "null"
+          id: 22
+          parentId: 2
+          name: 查看所有试卷
+          url: /main/paper/showPaper
+  admin-children:
+    - id: 3
+      type: 1
+      name: admin列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"
+  student-children:
+    - id: 3
+      type: 1
+      name: 学生列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"
+  teacher-children:
+    - id: 3
+      type: 1
+      name: 教师列表
+      url: "/main/stu"
+      children:
+        - children: "null"
+          id: 11
+          parentId: 1
+          type: 2
+          name: 查看所有用户
+          url: "/main/stu/stuList"
+```
+
+
+
+#### 6. docker映射配置文件
 
 在jar包的同级目录下建立一个config目录，在config目录下创建一个application.yaml 目录，在该文件中可以修改配置
 

@@ -5,7 +5,7 @@ mybatis-plus:
     db-config:
       id-type: assign_id
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: the_test_system

@@ -11,9 +11,7 @@ public class DateUtils {
      * @return 开始 true ， 否则 false
      */
     public static boolean isStare(LocalDateTime startTime){
-        Duration duration = Duration.between(LocalDateTime.now(),startTime);
-        // 如果小于0 说明 不满足要求
-        return duration.toMillis() <= 0;
+        return LocalDateTime.now().isAfter(startTime);
     }
 
     /**
